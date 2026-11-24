@@ -2,7 +2,7 @@
 
 Use **Chrome on an Android phone** (voice input, vibration and battery level work best there). Open:
 
-**https://p01--eyedentify--zptn6fs9b2zg.code.run**
+**https://eyedentify-dashboard.vercel.app** (backend on Northflank: https://p01--eyedentify--zptn6fs9b2zg.code.run)
 
 Allow camera, microphone and location when asked. Turn the volume up, or use earphones (left/right beeps need stereo).
 
