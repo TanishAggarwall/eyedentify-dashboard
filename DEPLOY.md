@@ -31,7 +31,7 @@ One Northflank service runs everything: the dashboard and the YOLO11n detection 
 | `ALLOWED_ORIGINS` | `*` | Comma-separated origins allowed to call the API, if the page is hosted elsewhere |
 | `MODEL_PATH` | `models/yolo11n-320.onnx` | Model file, relative to `backend/`. `models/yolo11n.onnx` (640 px) is more accurate for distant objects but about 4x slower |
 
-Later, the Claude API key for Talk AI, translation and banknotes will be added here as a **secret** (`ANTHROPIC_API_KEY`), never in the page.
+**`GEMINI_API_KEY`** (add as a **secret**) turns on Talk AI, AI reading, translation and banknote checks. Without it those features use scripted demo answers or on-server OCR. Optional `GEMINI_MODELS` overrides the comma-separated model list (default `gemini-flash-lite-latest,gemini-3.1-flash-lite,gemini-flash-latest,gemini-2.5-flash`).
 
 ## Updating
 

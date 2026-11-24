@@ -4,7 +4,7 @@
 import { getSettings, updateSettings, logEvent, getEvents, subscribe } from './store.js';
 import { speak, stopSpeaking, vibrate, unlockAudio, cue } from './speech.js';
 import * as camera from './camera.js';
-import { postImage, frameBlob, fileBlob, ensureCamera, drawBoxes, clearCanvas } from './api.js';
+import { postJSON, frameBlob, fileBlob, ensureCamera, drawBoxes, clearCanvas, blobToBase64, getHealth } from './api.js';
 
 const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -14,8 +14,10 @@ let busy = false;
 let result = null;          // last OCR result
 let stillSize = null;       // [w, h] of the still being shown
 let speaking = false;
+let aiEnabled = false;
 
 const DEVANAGARI = /[ऀ-ॿ]/;
+const LANG_NAMES = { hi: 'Hindi', ta: 'Tamil', te: 'Telugu', bn: 'Bengali', mr: 'Marathi', kn: 'Kannada', gu: 'Gujarati', pa: 'Punjabi', en: 'English' };
 
 function setBusy(on, label = 'Reading…') {
   busy = on;
@@ -46,13 +48,43 @@ function renderText() {
   $('#read-play').disabled = !has;
   $('#read-stop').disabled = !has;
   $('#read-copy').disabled = !has;
+  $('#read-translate').disabled = !has || !aiEnabled;
   if (!result) return;
   if (!has) {
     box.innerHTML = '<p class="placeholder">No text found. Move closer, fill the frame with the text, and keep the phone steady.</p>';
     return;
   }
   box.innerHTML = result.lines.map((l, i) =>
-    `<p data-line="${i}" class="${l.confidence < 0.7 ? 'low' : ''}" title="${Math.round(l.confidence * 100)}% sure">${esc(l.text)}</p>`).join('');
+    `<p data-line="${i}" class="${l.confidence < 0.7 ? 'low' : ''}"${l.confidence ? ` title="${Math.round(l.confidence * 100)}% sure"` : ''}>${esc(l.text)}</p>`).join('');
+}
+
+async function translate() {
+  if (!result?.text || !aiEnabled) return;
+  const code = $('#read-lang').value;
+  const target = LANG_NAMES[code] ?? 'Hindi';
+  const btn = $('#read-translate');
+  btn.disabled = true;
+  btn.textContent = 'Translating…';
+  try {
+    const res = await postJSON('/api/ai/translate', { text: result.text, target });
+    let out = $('#read-translation');
+    if (!out) {
+      out = document.createElement('div');
+      out.id = 'read-translation';
+      out.className = 'translation';
+      out.setAttribute('aria-live', 'polite');
+      $('#read-text').after(out);
+    }
+    out.innerHTML = `<small>${esc(target.toUpperCase())}</small>${esc(res.translation)}`;
+    speak(res.translation.replace(/\n/g, '. '), { force: true, rate: getSettings().readRate, lang: res.lang || `${code}-IN` });
+    logEvent({ mode: 'reading', kind: 'reading', source: 'ai', text: `Translated into ${target}: “${res.translation.replace(/\s+/g, ' ').slice(0, 80)}”`, detail: res.translation });
+  } catch (err) {
+    $('#read-status').textContent = err.message;
+    speak('Translation failed. ' + err.message, { force: true });
+  } finally {
+    btn.textContent = 'Translate';
+    btn.disabled = !result?.lines?.length;
+  }
 }
 
 function readAloud() {
@@ -79,20 +111,25 @@ async function runOcr(source) {
     }
     if (!shot) throw new Error('Couldn\'t capture a picture.');
     showStill(shot.canvas);
+    $('#read-translation')?.remove();
     cue(0, 'low');
-    result = await postImage('/api/read', shot.blob, { timeout: 30000 });
+    // The AI reads first (better with signs, spacing and Hindi); the server falls back to OCR by itself.
+    result = await postJSON('/api/ai/read', { image: await blobToBase64(shot.blob) }, { timeout: 40000 });
     const n = result.lines.length;
+    const engine = result.source === 'ai' ? 'Gemini' : 'basic OCR';
     $('#read-status').textContent = n
-      ? `${n} line${n === 1 ? '' : 's'} · read in ${(result.rtt / 1000).toFixed(1)} s`
+      ? `${n} line${n === 1 ? '' : 's'} · read by ${engine} in ${(result.rtt / 1000).toFixed(1)} s`
       : 'No text found.';
-    $('#read-meta').textContent = `Server OCR ${Math.round(result.ms)} ms · round trip ${Math.round(result.rtt)} ms`;
+    $('#read-meta').textContent = `${result.source === 'ai' ? result.model : 'RapidOCR'} · server ${Math.round(result.ms)} ms · round trip ${Math.round(result.rtt)} ms`;
     renderText();
-    drawBoxes($('#read-canvas'), result.lines.map((l) => l.box), stillSize[0], stillSize[1], { fit: 'contain' });
+    const boxes = result.lines.map((l) => l.box).filter(Boolean);
+    if (boxes.length) drawBoxes($('#read-canvas'), boxes, stillSize[0], stillSize[1], { fit: 'contain' });
+    else clearCanvas($('#read-canvas'));
     if (n) {
       vibrate([60]);
       readAloud();
       const preview = result.text.replace(/\s+/g, ' ').slice(0, 90);
-      logEvent({ mode: 'reading', kind: 'reading', source: 'live', text: `Read aloud: “${preview}${result.text.length > 90 ? '…' : ''}”`, detail: result.text });
+      logEvent({ mode: 'reading', kind: 'reading', source: result.source === 'ai' ? 'ai' : 'live', text: `Read aloud: “${preview}${result.text.length > 90 ? '…' : ''}”`, detail: result.text });
     } else {
       speak('I couldn\'t find any text. Move closer and hold the phone steady.', { force: true });
     }
@@ -162,10 +199,19 @@ export function initReading() {
     runOcr('camera');
   });
   window.addEventListener('resize', () => {
-    if (result && stillSize) drawBoxes($('#read-canvas'), result.lines.map((l) => l.box), stillSize[0], stillSize[1], { fit: 'contain' });
+    const boxes = result?.lines?.map((l) => l.box).filter(Boolean) ?? [];
+    if (boxes.length && stillSize) drawBoxes($('#read-canvas'), boxes, stillSize[0], stillSize[1], { fit: 'contain' });
   });
+  $('#read-translate').addEventListener('click', translate);
 
   subscribe((what) => { if (what === 'events') renderLog(); });
   renderLog();
   renderCameraState();
+  getHealth().then((h) => {
+    aiEnabled = Boolean(h?.ai?.enabled);
+    $('#read-translate').title = aiEnabled ? 'Translate with Gemini' : 'Needs the AI key on the server';
+    const hint = $('#read-translate').closest('.player').querySelector('.hint');
+    hint.textContent = aiEnabled ? 'Translation and reading use Google Gemini; basic OCR takes over if it\'s busy.' : 'Translation needs the AI key on the server. Reading uses basic OCR until then.';
+    renderText();
+  });
 }

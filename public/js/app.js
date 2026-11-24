@@ -6,6 +6,8 @@ import * as camera from './camera.js';
 import { initDetection } from './detection.js';
 import { initReading } from './reading.js';
 import { initPayment } from './payment.js';
+import { initTalk } from './talk.js';
+import { getHealth } from './api.js';
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -205,6 +207,11 @@ window.addEventListener('eyedentify:latency', (e) => {
 
 /* ------------------------------------------------------------------ Device status */
 let visionState = ['Connects in Detection', 'warn'];
+let aiState = ['Checking…', 'warn'];
+getHealth().then((h) => {
+  aiState = !h ? ['Server unreachable', 'bad'] : h.ai?.enabled ? [`Ready · ${h.ai.model}`, 'ok'] : ['Key not set · demo answers', 'warn'];
+  renderStatus();
+});
 window.addEventListener('eyedentify:vision', (e) => {
   const { state, text } = e.detail;
   visionState = state === 'ready' ? [text.replace('Cloud ', '').replace(' ready', ' · ready'), 'ok']
@@ -222,7 +229,7 @@ function renderStatus() {
     ['i-vibrate', 'Haptic cues', vibrationSupported ? ['Supported', 'ok'] : ['Not on this device', 'warn']],
     ['i-pin', 'Location', 'geolocation' in navigator ? ['Supported', 'ok'] : ['Not supported', 'warn']],
     ['i-chip', 'Cloud detection (YOLO)', visionState],
-    ['i-cloud', 'Cloud AI', ['Not set up yet', 'warn']],
+    ['i-cloud', 'Cloud AI (Gemini)', aiState],
   ];
   $('#status-list').innerHTML = rows.map(([ic, label, [value, cls]]) =>
     `<div class="status-row"><span>${icon(ic)}${esc(label)}</span><strong class="${cls}">${esc(value)}</strong></div>`).join('');
@@ -374,6 +381,7 @@ function init() {
   initDetection();
   initReading();
   initPayment();
+  initTalk();
 
   camera.attach($('#overview-video'));
   camera.onCameraChange(renderCamera);

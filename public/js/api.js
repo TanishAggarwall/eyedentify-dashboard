@@ -32,6 +32,33 @@ export async function postImage(path, blob, { timeout = 20000 } = {}) {
   }
 }
 
+/** POST JSON to the backend and return the JSON reply (with round-trip time `rtt`). */
+export async function postJSON(path, body, { timeout = 30000 } = {}) {
+  const blob = new Blob([JSON.stringify(body)], { type: 'application/json' });
+  return postImage(path, blob, { timeout });
+}
+
+/** Base64 (no data: prefix) of a JPEG blob, for the JSON AI endpoints. */
+export function blobToBase64(blob) {
+  return new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve(String(r.result).split(',', 2)[1]);
+    r.onerror = () => reject(r.error);
+    r.readAsDataURL(blob);
+  });
+}
+
+/** Server health, fetched once and shared (includes whether the AI is configured). */
+let healthPromise = null;
+export function getHealth({ refresh = false } = {}) {
+  if (!healthPromise || refresh) {
+    healthPromise = fetch(apiUrl('/api/health'), { cache: 'no-store' })
+      .then((r) => (r.ok ? r.json() : null))
+      .catch(() => null);
+  }
+  return healthPromise;
+}
+
 const toBlob = (canvas, quality = 0.85) => new Promise((resolve) => canvas.toBlob(resolve, 'image/jpeg', quality));
 
 /** The current camera frame as a JPEG blob, plus a data URL of it for showing a still. */

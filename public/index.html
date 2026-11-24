@@ -292,8 +292,8 @@
         <section class="view" id="view-reading" data-title="Instant reading" hidden aria-labelledby="read-title">
           <div class="page-heading"><div><span class="eyebrow">MODE 2 · INSTANT READING</span><h1 id="read-title">Read it to me.</h1><p class="lede">Point at a sign, label, menu or page, and hear it read aloud.</p></div></div>
           <div class="context-line">
-            <span><i class="dot"></i>Text is recognised on the EYEDENTIFY cloud server, then the photo is discarded.</span>
-            <span class="soft-badge"><svg class="icon"><use href="#i-book"/></svg>Cloud OCR</span>
+            <span><i class="dot"></i>Text is read by Google Gemini through the EYEDENTIFY server, with on-server OCR as a backup.</span>
+            <span class="soft-badge"><svg class="icon"><use href="#i-sparkle"/></svg>AI reading</span>
           </div>
 
           <div class="det-grid">
@@ -338,9 +338,9 @@
                     <option value="bn">Bengali</option><option value="mr">Marathi</option><option value="kn">Kannada</option>
                     <option value="gu">Gujarati</option><option value="pa">Punjabi</option><option value="en">English</option>
                   </select>
-                  <button class="button outline small" id="read-translate" disabled title="Arrives with the AI step">Translate</button>
+                  <button class="button outline small" id="read-translate" disabled>Translate</button>
                 </div>
-                <p class="hint">Translation uses the AI and is added in the next build step.</p>
+                <p class="hint">Checking whether the AI is available…</p>
               </div>
             </article>
 
@@ -407,8 +407,9 @@
               <div class="note-strip" aria-hidden="true">
                 <span>₹10</span><span>₹20</span><span>₹50</span><span>₹100</span><span>₹200</span><span>₹500</span>
               </div>
-              <button class="button outline" id="note-btn" disabled><svg class="icon"><use href="#i-sparkle"/></svg>Check banknote</button>
-              <p class="hint">Banknote recognition uses the AI and is added in the next build step.</p>
+              <div class="note-result" id="note-out" aria-live="polite"></div>
+              <button class="button primary" id="note-btn"><svg class="icon"><use href="#i-sparkle"/></svg>Check banknote</button>
+              <p class="hint" id="note-hint">Uses Google Gemini. It tells you the value, not whether a note is genuine.</p>
             </article>
           </div>
         </section>
@@ -416,9 +417,47 @@
           <div class="page-heading"><div><span class="eyebrow">MODE 4</span><h1>AI <em>navigation</em></h1><p class="lede">Spoken directions outdoors, and step-by-step guidance indoors.</p></div></div>
           <article class="card upcoming" data-upcoming="navigation-mode"></article>
         </section>
-        <section class="view" id="view-talk" data-title="Talk AI" hidden>
-          <div class="page-heading"><div><span class="eyebrow">MODE 5</span><h1>Talk <em>AI</em></h1><p class="lede">Ask about what's in front of you, and hear the answer.</p></div></div>
-          <article class="card upcoming" data-upcoming="talk"></article>
+        <section class="view" id="view-talk" data-title="Talk AI" hidden aria-labelledby="talk-title">
+          <div class="page-heading"><div><span class="eyebrow">MODE 5 · TALK AI</span><h1 id="talk-title">Ask about your world.</h1><p class="lede">“Where did I put my keys?” Ask by voice or by typing, and hear the answer.</p></div></div>
+          <div class="context-line">
+            <span><i class="dot"></i>Your question and one camera frame go to Google Gemini through the EYEDENTIFY server.</span>
+            <span class="soft-badge" id="talk-engine"><svg class="icon"><use href="#i-sparkle"/></svg>Checking AI…</span>
+          </div>
+
+          <div class="det-grid">
+            <article class="card talk-view">
+              <div class="card-label"><svg class="icon"><use href="#i-camera"/></svg>WHAT THE AI WILL SEE<i class="status-dot" id="talk-dot"></i></div>
+              <div class="viewfinder talk-finder">
+                <video id="talk-video" playsinline muted aria-hidden="true"></video>
+                <img id="talk-still" alt="" hidden>
+                <div class="viewfinder-empty" id="talk-empty">
+                  <svg class="icon xl"><use href="#i-talk"/></svg>
+                  <span>Ask a question. The camera starts and the AI looks at what's in front of you.</span>
+                </div>
+                <div class="busy" id="talk-busy" hidden><span class="spinner"></span>Thinking…</div>
+              </div>
+              <div class="talk-ask">
+                <button class="mic-btn" id="talk-mic" aria-label="Hold or tap to ask by voice"><svg class="icon"><use href="#i-mic"/></svg></button>
+                <form id="talk-form" class="talk-form" onsubmit="return false">
+                  <input type="text" id="talk-input" placeholder="Type a question, or tap the mic" autocomplete="off" aria-label="Your question">
+                  <button class="button primary" type="submit" id="talk-send">Ask</button>
+                </form>
+              </div>
+              <div class="chip-row" id="talk-chips"></div>
+              <div class="talk-foot">
+                <label class="lang-pick"><span>Listen in</span>
+                  <select id="talk-lang"><option value="en-IN">English</option><option value="hi-IN">हिन्दी</option></select>
+                </label>
+                <span class="hint" id="talk-meta"></span>
+              </div>
+            </article>
+
+            <article class="card talk-thread-card">
+              <div class="card-heading"><div><h3>Conversation</h3><p>Newest at the bottom. Tap an answer to hear it again.</p></div>
+                <button class="link-btn muted" id="talk-clear">Clear</button></div>
+              <ol class="thread" id="talk-thread" aria-live="polite"></ol>
+            </article>
+          </div>
         </section>
 
         <!-- ============ DEVICE ============ -->

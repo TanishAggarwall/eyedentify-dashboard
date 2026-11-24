@@ -5,7 +5,7 @@
 import { logEvent } from './store.js';
 import { speak, vibrate, cue, unlockAudio } from './speech.js';
 import * as camera from './camera.js';
-import { postImage, frameBlob, fileBlob, ensureCamera, drawBoxes, clearCanvas } from './api.js';
+import { postImage, postJSON, frameBlob, fileBlob, ensureCamera, drawBoxes, clearCanvas, blobToBase64, getHealth } from './api.js';
 
 const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -249,6 +249,47 @@ function workOutChange() {
   logEvent({ mode: 'payment', kind: 'info', source: 'live', text: `Change for ₹${bill} paid with ₹${given}: ${c.label}` });
 }
 
+/* ------------------------------------------------------------------ Banknotes (Gemini) */
+async function checkBanknote() {
+  const btn = $('#note-btn');
+  const out = $('#note-out');
+  unlockAudio();
+  btn.disabled = true;
+  btn.lastChild.textContent = 'Looking…';
+  out.innerHTML = '';
+  try {
+    await ensureCamera($('#pay-video'));
+    const shot = await frameBlob($('#pay-video'), 1024, 0.85);
+    if (!shot) throw new Error('Couldn\'t capture a picture.');
+    cue(0, 'low');
+    const res = await postJSON('/api/ai/banknote', { image: await blobToBase64(shot.blob) });
+    const notes = res.notes ?? [];
+    let spoken;
+    if (!notes.length) {
+      spoken = `I can't see a banknote clearly. ${res.advice || 'Hold the note flat, about 20 centimetres from the camera, in good light.'}`;
+      out.innerHTML = `<p class="placeholder">${esc(spoken)}</p>`;
+    } else {
+      const inr = notes.filter((n) => (n.currency || 'INR') === 'INR');
+      const list = notes.map((n) => `${n.denomination} ${n.currency === 'INR' || !n.currency ? 'rupee' : n.currency}`);
+      spoken = notes.length === 1
+        ? `This is a ${list[0]} note.`
+        : `I see ${notes.length} notes: ${list.join(', ')}.${inr.length === notes.length ? ` Total ${res.total} rupees.` : ''}`;
+      if (res.confidence === 'low') spoken += ' I\'m not fully sure; hold it closer to check.';
+      out.innerHTML = `<div class="pay-amount">₹${esc(res.total.toLocaleString('en-IN'))}<small>${notes.length} note${notes.length === 1 ? '' : 's'} · ${esc(res.confidence)} confidence</small></div>
+        <div class="coin-row">${notes.map((n) => `<span class="coin note">${n.currency && n.currency !== 'INR' ? esc(n.currency) + ' ' : '₹'}${n.denomination}</span>`).join('')}</div>`;
+      logEvent({ mode: 'payment', kind: 'scan', source: 'ai', text: `Banknote check: ${list.join(', ')}` });
+    }
+    vibrate(notes.length ? [80] : [40, 60, 40]);
+    speak(spoken, { force: true });
+  } catch (err) {
+    out.innerHTML = `<p class="placeholder">${esc(err.message)}</p>`;
+    speak('Banknote check failed. ' + err.message, { force: true });
+  } finally {
+    btn.disabled = false;
+    btn.lastChild.textContent = 'Check banknote';
+  }
+}
+
 /* ------------------------------------------------------------------ Init */
 export function initPayment() {
   camera.attach($('#pay-video'));
@@ -261,6 +302,12 @@ export function initPayment() {
   });
   $('#pay-repeat').addEventListener('click', () => lastSpoken && speak(lastSpoken, { force: true }));
   $('#change-form').addEventListener('submit', workOutChange);
+  $('#note-btn').addEventListener('click', checkBanknote);
+  getHealth().then((h) => {
+    if (h?.ai?.enabled) return;
+    $('#note-btn').disabled = true;
+    $('#note-hint').textContent = 'Banknote check needs the AI key on the server.';
+  });
   window.addEventListener('hashchange', () => { if (location.hash !== '#payment' && scanning) stopScan(); });
   setScanUI();
 }

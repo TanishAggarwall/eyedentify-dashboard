@@ -387,6 +387,40 @@ main { min-width: 0; outline: none; }
 .note-strip span { padding: 10px 14px; border-radius: 10px; background: var(--surface-2); font-family: var(--head); font-weight: 800; font-size: .9rem; color: var(--muted); }
 .note-card .hint { margin-top: 12px; }
 
+/* ---------- Talk AI ---------- */
+.talk-view { grid-column: span 7; align-self: start; }
+.talk-thread-card { grid-column: span 5; display: flex; flex-direction: column; max-height: 760px; }
+.talk-finder { aspect-ratio: 4 / 3; margin-bottom: 16px; }
+.talk-finder img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.talk-ask { display: flex; gap: 12px; align-items: center; }
+.mic-btn {
+  flex: none; display: grid; place-items: center; width: 56px; height: 56px; border-radius: 50%;
+  border: 0; background: var(--purple); color: #fff; cursor: pointer; transition: transform .1s, box-shadow .2s;
+}
+.mic-btn .icon { width: 24px; height: 24px; }
+.mic-btn:active { transform: scale(.96); }
+.mic-btn.listening { background: var(--red); box-shadow: 0 0 0 8px var(--red-soft); animation: pulse 1.2s infinite; }
+.mic-btn:disabled { opacity: .45; cursor: not-allowed; }
+.talk-form { flex: 1; display: flex; gap: 8px; min-width: 0; }
+.talk-form input { flex: 1; min-width: 0; border-radius: 999px; padding: 8px 18px; }
+.chip-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.chip { padding: 7px 14px; border-radius: 999px; border: 1px solid var(--line-strong); background: transparent; color: var(--muted); font-size: .78rem; cursor: pointer; }
+.chip:hover { color: var(--text); border-color: var(--purple); }
+.talk-foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 16px; flex-wrap: wrap; }
+.talk-foot .hint { margin-top: 0; }
+.lang-pick { display: flex; align-items: center; gap: 10px; font-size: .8rem; color: var(--muted); }
+.lang-pick select { min-height: 36px; padding: 4px 10px; }
+.thread { list-style: none; margin: 0; padding: 0; flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; min-height: 240px; }
+.thread li { max-width: 92%; padding: 12px 16px; border-radius: 16px; font-size: .9rem; line-height: 1.5; overflow-wrap: anywhere; }
+.thread li.q { align-self: flex-end; background: var(--purple-soft); color: var(--purple-text); border-bottom-right-radius: 6px; }
+.thread li.a { align-self: flex-start; background: var(--surface-2); border-bottom-left-radius: 6px; cursor: pointer; }
+.thread li.a small { display: flex; gap: 8px; align-items: center; margin-top: 6px; color: var(--faint); font-size: .7rem; }
+.thread li.err { align-self: flex-start; background: var(--red-soft); color: var(--text); }
+.thread li.empty { align-self: stretch; max-width: none; background: none; text-align: center; color: var(--faint); }
+.translation { margin-top: 12px; padding: 12px 14px; border-radius: 12px; background: var(--tint-lavender); border: 1px solid var(--tint-lavender-line); font-size: .95rem; line-height: 1.6; white-space: pre-line; }
+.translation small { display: block; margin-bottom: 4px; color: var(--faint); font-size: .7rem; letter-spacing: .1em; }
+.note-result { margin: 4px 0 14px; }
+
 /* ---------- Upcoming mode placeholder ---------- */
 .upcoming { display: grid; gap: 14px; max-width: 760px; }
 .upcoming h2 { font-size: 1.3rem; letter-spacing: -.03em; }
@@ -485,6 +519,8 @@ dialog::backdrop { background: #000b; }
   .read-view, .pay-view { grid-column: span 7; }
   .read-result, .pay-result { grid-column: span 5; }
   .change-card, .note-card { grid-column: 1 / -1; }
+  .talk-view { grid-column: span 7; }
+  .talk-thread-card { grid-column: span 5; }
   .demo-grid { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); }
   .promo { grid-column: 1 / -1; }
   .camera-card {
@@ -516,8 +552,10 @@ dialog::backdrop { background: #000b; }
   .wide-only { display: none; }
   .det-grid { gap: 16px; }
   .det-view, .det-side, .det-demos, .det-log-card { grid-column: 1 / -1; }
-  .read-view, .read-result, .pay-view, .pay-result, .change-card, .note-card { grid-column: 1 / -1; }
+  .read-view, .read-result, .pay-view, .pay-result, .change-card, .note-card, .talk-view, .talk-thread-card { grid-column: 1 / -1; }
   .det-finder, .read-finder, .pay-finder { aspect-ratio: 3 / 4; max-height: 70vh; }
+  .talk-finder { aspect-ratio: 4 / 3; }
+  .talk-thread-card { max-height: none; }
 }
 @media (max-width: 640px) {
   .breadcrumb, #glasses-pill { display: none; }
