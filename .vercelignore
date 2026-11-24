@@ -3,3 +3,4 @@ backend/
 *.png
 !public/**
 Dockerfile
+docs/
