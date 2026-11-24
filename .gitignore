@@ -7,3 +7,4 @@ __pycache__/
 *.pt
 public/__test/
 .claude/
+.venv/

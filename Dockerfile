@@ -10,8 +10,10 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app
 
-COPY backend/requirements.txt backend/requirements.txt
-RUN pip install -r backend/requirements.txt
+COPY backend/requirements.txt backend/requirements-nodeps.txt backend/
+RUN pip install -r backend/requirements.txt \
+ && pip install --no-deps -r backend/requirements-nodeps.txt \
+ && python -c "import cv2, zxingcpp; from rapidocr_onnxruntime import RapidOCR"
 
 COPY backend backend
 COPY public public

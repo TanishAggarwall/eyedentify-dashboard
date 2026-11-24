@@ -13,6 +13,7 @@ const DEFAULT_SETTINGS = {
   highContrast: false,
   detectRange: 3,
   detectBeep: true,
+  readRate: 1.2,
 };
 
 function read(key, fallback) {

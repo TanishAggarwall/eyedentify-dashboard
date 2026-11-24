@@ -3,3 +3,13 @@ uvicorn==0.32.1
 onnxruntime==1.20.1
 numpy==2.2.0
 pillow==11.0.0
+zxing-cpp==3.1.1
+# RapidOCR's dependencies, with headless OpenCV (no GUI libraries needed in the container).
+# rapidocr-onnxruntime itself is installed with --no-deps (see requirements-nodeps.txt),
+# because it would otherwise pull in the full opencv-python.
+opencv-python-headless==5.1.0.95
+pyclipper==1.4.0
+PyYAML==6.0.4
+shapely==2.2.0
+six==1.17.0
+tqdm==4.70.1

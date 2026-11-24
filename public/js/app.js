@@ -4,6 +4,8 @@ import { getSettings, updateSettings, logEvent, getEvents, clearEvents, subscrib
 import { speak, stopSpeaking, repeatLast, vibrate, onVoices, speechSupported, vibrationSupported } from './speech.js';
 import * as camera from './camera.js';
 import { initDetection } from './detection.js';
+import { initReading } from './reading.js';
+import { initPayment } from './payment.js';
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -370,6 +372,8 @@ function init() {
   initSettings();
   initBattery();
   initDetection();
+  initReading();
+  initPayment();
 
   camera.attach($('#overview-video'));
   camera.onCameraChange(renderCamera);

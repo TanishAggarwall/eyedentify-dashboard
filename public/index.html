@@ -289,13 +289,128 @@
             </article>
           </div>
         </section>
-        <section class="view" id="view-reading" data-title="Instant reading" hidden>
-          <div class="page-heading"><div><span class="eyebrow">MODE 2</span><h1>Instant <em>reading</em></h1><p class="lede">Point at a sign, label or page and hear it read aloud.</p></div></div>
-          <article class="card upcoming" data-upcoming="reading"></article>
+        <section class="view" id="view-reading" data-title="Instant reading" hidden aria-labelledby="read-title">
+          <div class="page-heading"><div><span class="eyebrow">MODE 2 · INSTANT READING</span><h1 id="read-title">Read it to me.</h1><p class="lede">Point at a sign, label, menu or page, and hear it read aloud.</p></div></div>
+          <div class="context-line">
+            <span><i class="dot"></i>Text is recognised on the EYEDENTIFY cloud server, then the photo is discarded.</span>
+            <span class="soft-badge"><svg class="icon"><use href="#i-book"/></svg>Cloud OCR</span>
+          </div>
+
+          <div class="det-grid">
+            <article class="card read-view">
+              <div class="card-label"><svg class="icon"><use href="#i-camera"/></svg>WHAT THE CAMERA SEES<i class="status-dot" id="read-dot"></i></div>
+              <div class="viewfinder read-finder">
+                <video id="read-video" playsinline muted aria-hidden="true"></video>
+                <img id="read-still" alt="" hidden>
+                <canvas id="read-canvas" aria-hidden="true"></canvas>
+                <div class="viewfinder-empty" id="read-empty">
+                  <svg class="icon xl"><use href="#i-book"/></svg>
+                  <span>Hold the text steady and fill the frame, then tap Read text.</span>
+                </div>
+                <div class="busy" id="read-busy" hidden><span class="spinner"></span>Reading…</div>
+              </div>
+              <div class="det-controls">
+                <div class="button-row tight">
+                  <button class="button primary" id="read-btn"><svg class="icon"><use href="#i-book"/></svg>Read text</button>
+                  <label class="button outline file-btn"><svg class="icon"><use href="#i-download"/></svg>Upload photo<input type="file" id="read-file" accept="image/*" class="sr-only"></label>
+                  <button class="button outline" id="read-live" hidden><svg class="icon"><use href="#i-camera"/></svg>Back to live</button>
+                </div>
+                <span class="hint" id="read-meta"></span>
+              </div>
+            </article>
+
+            <article class="card read-result">
+              <div class="card-heading"><div><h3>What it says</h3><p id="read-status">Nothing read yet.</p></div></div>
+              <div class="read-text" id="read-text" aria-live="polite"><p class="placeholder">The text will appear here, line by line, and be read aloud.</p></div>
+              <div class="player">
+                <div class="button-row tight">
+                  <button class="button primary small" id="read-play" disabled><svg class="icon"><use href="#i-volume"/></svg><span>Read aloud</span></button>
+                  <button class="button outline small" id="read-stop" disabled><svg class="icon"><use href="#i-stop"/></svg>Stop</button>
+                  <button class="button outline small" id="read-copy" disabled>Copy</button>
+                </div>
+                <label class="field">
+                  <span>Reading speed <output id="read-rate-out">1.2×</output></span>
+                  <input type="range" id="read-rate" min="1" max="3.5" step="0.1" value="1.2">
+                </label>
+                <div class="translate-row">
+                  <select id="read-lang" aria-label="Translate into">
+                    <option value="hi">Hindi</option><option value="ta">Tamil</option><option value="te">Telugu</option>
+                    <option value="bn">Bengali</option><option value="mr">Marathi</option><option value="kn">Kannada</option>
+                    <option value="gu">Gujarati</option><option value="pa">Punjabi</option><option value="en">English</option>
+                  </select>
+                  <button class="button outline small" id="read-translate" disabled title="Arrives with the AI step">Translate</button>
+                </div>
+                <p class="hint">Translation uses the AI and is added in the next build step.</p>
+              </div>
+            </article>
+
+            <article class="card read-log-card">
+              <div class="card-heading">
+                <div><h3>Recent readings</h3><p>What was read aloud.</p></div>
+                <a class="link" href="#history">View all <svg class="icon"><use href="#i-arrow-ne"/></svg></a>
+              </div>
+              <ol class="feed" id="read-log"></ol>
+            </article>
+          </div>
         </section>
-        <section class="view" id="view-payment" data-title="Payment & currency" hidden>
-          <div class="page-heading"><div><span class="eyebrow">MODE 3</span><h1>Payment &amp; <em>currency</em></h1><p class="lede">Check banknotes and QR codes before you pay.</p></div></div>
-          <article class="card upcoming" data-upcoming="payment"></article>
+
+        <section class="view" id="view-payment" data-title="Payment & currency" hidden aria-labelledby="pay-title">
+          <div class="page-heading"><div><span class="eyebrow">MODE 3 · PAYMENT &amp; CURRENCY</span><h1 id="pay-title">Check before you pay.</h1><p class="lede">Hear who a UPI QR code pays and how much, and work out your change.</p></div></div>
+          <div class="context-line">
+            <span><i class="dot"></i>EYEDENTIFY only reads codes aloud. It never makes or approves a payment.</span>
+            <span class="soft-badge"><svg class="icon"><use href="#i-shield"/></svg>Read-only</span>
+          </div>
+
+          <div class="det-grid">
+            <article class="card pay-view">
+              <div class="card-label"><svg class="icon"><use href="#i-wallet"/></svg>QR SCANNER<i class="status-dot" id="pay-dot"></i></div>
+              <div class="viewfinder pay-finder">
+                <video id="pay-video" playsinline muted aria-hidden="true"></video>
+                <canvas id="pay-canvas" aria-hidden="true"></canvas>
+                <div class="viewfinder-empty" id="pay-empty">
+                  <svg class="icon xl"><use href="#i-wallet"/></svg>
+                  <span id="pay-empty-text">Start scanning and point the camera at a UPI or merchant QR code.</span>
+                </div>
+                <div class="scan-frame" id="pay-frame" hidden aria-hidden="true"></div>
+              </div>
+              <div class="det-controls">
+                <div class="button-row tight">
+                  <button class="button primary" id="pay-start"><svg class="icon"><use href="#i-wallet"/></svg><span>Start scanning</span></button>
+                  <label class="button outline file-btn"><svg class="icon"><use href="#i-download"/></svg>Upload QR photo<input type="file" id="pay-file" accept="image/*" class="sr-only"></label>
+                </div>
+                <span class="hint" id="pay-meta"></span>
+              </div>
+            </article>
+
+            <article class="card pay-result" aria-live="polite">
+              <div class="card-heading"><div><h3>Payment check</h3><p id="pay-status">No code scanned yet.</p></div><span class="badge system" id="pay-kind" hidden></span></div>
+              <div id="pay-details" class="pay-details">
+                <p class="placeholder">Scan a QR code to hear who it pays, the UPI ID and the amount.</p>
+              </div>
+              <div class="button-row tight">
+                <button class="button outline small" id="pay-repeat" disabled><svg class="icon"><use href="#i-repeat"/></svg>Say it again</button>
+              </div>
+            </article>
+
+            <article class="card change-card">
+              <div class="card-heading"><div><h3>Change calculator</h3><p>How much should come back, in notes and coins.</p></div><svg class="icon muted-icon"><use href="#i-wallet"/></svg></div>
+              <form id="change-form" class="change-form" onsubmit="return false">
+                <label class="field"><span>Bill amount (₹)</span><input type="number" id="change-bill" min="0" step="1" inputmode="decimal" placeholder="e.g. 120"></label>
+                <label class="field"><span>You gave (₹)</span><input type="number" id="change-given" min="0" step="1" inputmode="decimal" placeholder="e.g. 500"></label>
+                <button class="button primary" id="change-btn" type="submit">Work out change</button>
+              </form>
+              <div class="change-out" id="change-out" aria-live="polite"></div>
+            </article>
+
+            <article class="card note-card">
+              <div class="card-heading"><div><h3>Banknote check</h3><p>Hold a note flat in front of the camera to hear its value.</p></div><span class="badge ai">AI</span></div>
+              <div class="note-strip" aria-hidden="true">
+                <span>₹10</span><span>₹20</span><span>₹50</span><span>₹100</span><span>₹200</span><span>₹500</span>
+              </div>
+              <button class="button outline" id="note-btn" disabled><svg class="icon"><use href="#i-sparkle"/></svg>Check banknote</button>
+              <p class="hint">Banknote recognition uses the AI and is added in the next build step.</p>
+            </article>
+          </div>
         </section>
         <section class="view" id="view-navigation-mode" data-title="AI navigation" hidden>
           <div class="page-heading"><div><span class="eyebrow">MODE 4</span><h1>AI <em>navigation</em></h1><p class="lede">Spoken directions outdoors, and step-by-step guidance indoors.</p></div></div>
