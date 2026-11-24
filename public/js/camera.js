@@ -1,4 +1,4 @@
-// The phone's back camera stands in for the glasses' cameras.
+// The phone's back camera stands in for the glasses' camera.
 let stream = null;
 let info = { label: '', facing: '', width: 0, height: 0 };
 const listeners = new Set();
