@@ -1,0 +1,19 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "buildCommand": "",
+  "installCommand": "",
+  "outputDirectory": "public",
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/api/:path*", "destination": "https://p01--eyedentify--zptn6fs9b2zg.code.run/api/:path*" }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "Permissions-Policy", "value": "camera=(self), microphone=(self), geolocation=(self)" }
+      ]
+    }
+  ]
+}
