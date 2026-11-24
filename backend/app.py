@@ -22,7 +22,9 @@ from starlette.concurrency import run_in_threadpool
 from detector import YoloDetector
 
 HERE = Path(__file__).resolve().parent
-MODEL_PATH = Path(os.getenv("MODEL_PATH", HERE / "models" / "yolo11n.onnx"))
+# 320-pixel input: ~4x less work than 640, fast enough on a small shared CPU.
+# Set MODEL_PATH=models/yolo11n.onnx for the 640 version on a bigger plan.
+MODEL_PATH = Path(os.getenv("MODEL_PATH", HERE / "models" / "yolo11n-320.onnx"))
 PUBLIC_DIR = Path(os.getenv("PUBLIC_DIR", HERE.parent / "public"))
 MAX_BYTES = 3 * 1024 * 1024
 ALLOWED_ORIGINS = [o.strip() for o in os.getenv("ALLOWED_ORIGINS", "*").split(",") if o.strip()]

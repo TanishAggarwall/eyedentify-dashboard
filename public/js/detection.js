@@ -8,7 +8,7 @@ import * as camera from './camera.js';
 import { apiUrl } from './api.js';
 
 const FRAME_GAP_MS = 120;         // at most ~8 frames a second; one request in flight at a time
-const FRAME_SIDE = 640;           // YOLO input size; frames are downscaled before upload
+const FRAME_SIDE = 480;           // downscale before upload; the server's YOLO runs at 320 px
 const JPEG_QUALITY = 0.7;
 const REQUEST_TIMEOUT_MS = 5000;
 const MIN_SCORE = 0.4;

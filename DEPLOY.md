@@ -27,9 +27,9 @@ One Northflank service runs everything: the dashboard and the YOLO11n detection 
 | Variable | Default | Meaning |
 |---|---|---|
 | `PORT` | `8080` | Port the server listens on |
-| `ORT_THREADS` | all cores | CPU threads ONNX Runtime may use |
+| `ORT_THREADS` | `1` (set in the Dockerfile) | CPU threads ONNX Runtime may use |
 | `ALLOWED_ORIGINS` | `*` | Comma-separated origins allowed to call the API, if the page is hosted elsewhere |
-| `MODEL_PATH` | `backend/models/yolo11n.onnx` | Swap in another YOLO ONNX export |
+| `MODEL_PATH` | `models/yolo11n-320.onnx` | Model file, relative to `backend/`. `models/yolo11n.onnx` (640 px) is more accurate for distant objects but about 4x slower |
 
 Later, the Claude API key for Talk AI, translation and banknotes will be added here as a **secret** (`ANTHROPIC_API_KEY`), never in the page.
 
@@ -41,4 +41,4 @@ Push to the `main` branch; Northflank rebuilds and redeploys automatically.
 
 - Camera frames are sent to the service for detection and discarded; nothing is stored on the server.
 - YOLO11n is released by Ultralytics under the AGPL-3.0 licence. That's fine for a hackathon prototype; a commercial product would need an Ultralytics enterprise licence or a differently licensed model.
-- To rebuild the model file: `pip install ultralytics`, then `yolo export model=yolo11n.pt format=onnx imgsz=640 opset=12`.
+- To rebuild the model file: `pip install ultralytics`, then `yolo export model=yolo11n.pt format=onnx imgsz=640 opset=12` (and `imgsz=320`, renamed to `yolo11n-320.onnx`, for the default fast model).

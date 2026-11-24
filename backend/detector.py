@@ -19,6 +19,7 @@ class YoloDetector:
         opts.graph_optimization_level = ort.GraphOptimizationLevel.ORT_ENABLE_ALL
         if threads:
             opts.intra_op_num_threads = threads
+            opts.inter_op_num_threads = 1
         self.session = ort.InferenceSession(str(model_path), opts, providers=["CPUExecutionProvider"])
         inp = self.session.get_inputs()[0]
         self.input_name = inp.name
