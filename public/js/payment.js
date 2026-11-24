@@ -311,3 +311,7 @@ export function initPayment() {
   window.addEventListener('hashchange', () => { if (location.hash !== '#payment' && scanning) stopScan(); });
   setScanUI();
 }
+
+/** Voice commands: banknote check and QR scanning. */
+export { checkBanknote };
+export const startQrScan = () => { if (!scanning) startScan(); };

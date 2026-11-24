@@ -10,6 +10,11 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -102,6 +107,7 @@
           <span class="pill" id="glasses-pill" title="The glasses hardware is offline. This phone is standing in for it.">
             <i></i><span>Glasses not connected</span>
           </span>
+          <button class="voice-btn" id="voice-btn" aria-label="Voice command" aria-pressed="false" title="Voice command (V)"><svg class="icon"><use href="#i-mic"/></svg></button>
           <button class="mode-chip" id="mode-chip" aria-label="Active mode. Tap to switch to the next mode.">
             <svg class="icon"><use href="#i-radar"/></svg><span id="mode-chip-label">Detection</span>
           </button>
@@ -584,6 +590,7 @@
                 <div><dt><kbd>R</kbd></dt><dd>Repeat the last thing said</dd></div>
                 <div><dt><kbd>Esc</kbd></dt><dd>Stop speaking</dd></div>
                 <div><dt><kbd>C</kbd></dt><dd>Camera on / off</dd></div>
+                <div><dt><kbd>V</kbd></dt><dd>Voice command (“read this”, “where am I”)</dd></div>
               </dl>
               <div class="button-row">
                 <button class="button ghost" id="repeat-btn"><svg class="icon"><use href="#i-repeat"/></svg>Repeat last</button>

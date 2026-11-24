@@ -9,7 +9,7 @@
   --line-strong: #363341;
   --text: #eeedf3;
   --muted: #9b98a8;
-  --faint: #6f6c7c;
+  --faint: #8f8c9c;  /* ≥4.5:1 on cards for small text */
   --purple: #8b55f7;
   --purple-hover: #9d6dff;
   --purple-soft: #8b55f71f;
@@ -167,6 +167,9 @@ main { min-width: 0; outline: none; }
 .mode-chip { display: inline-flex; align-items: center; gap: 8px; min-height: 36px; padding: 6px 14px; border-radius: 999px; border: 1px solid var(--line-strong); background: transparent; color: var(--text); font-weight: 500; font-size: .78rem; cursor: pointer; white-space: nowrap; }
 .mode-chip .icon { width: 16px; height: 16px; color: var(--purple-text); }
 .mode-chip:hover { border-color: var(--purple); }
+.voice-btn { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--line-strong); background: transparent; color: var(--purple-text); cursor: pointer; }
+.voice-btn:hover { border-color: var(--purple); }
+.voice-btn.listening { background: var(--red); border-color: var(--red); color: #fff; box-shadow: 0 0 0 6px var(--red-soft); animation: pulse 1.2s infinite; }
 
 .notice { margin-bottom: 20px; padding: 14px 18px; border-radius: 14px; background: var(--red-soft); border: 1px solid #f8717144; font-size: .9rem; }
 .notice strong { color: var(--red); }
@@ -641,7 +644,13 @@ dialog::backdrop { background: #000b; }
 }
 @media (pointer: coarse) {
   .kbd-hint, .nav-item kbd, .mode-tile .num { display: none; }
+  /* Comfortable touch targets (44 px) on phones */
+  .chip, .filter-btn, .button.small, .mode-chip { min-height: 44px; }
+  .link-btn { min-height: 44px; }
+  .voice-btn { width: 44px; height: 44px; }
 }
+.view h1:focus { outline: none; }
+.view h1:focus-visible { outline: 2px solid var(--purple-text); outline-offset: 4px; border-radius: 6px; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition: none !important; animation: none !important; }
 }

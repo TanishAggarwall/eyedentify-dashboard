@@ -162,3 +162,6 @@ export async function initTalk() {
   aiInfo = (await getHealth())?.ai ?? null;
   $('#talk-engine').innerHTML = `<svg class="icon"><use href="#i-sparkle"/></svg>${aiInfo?.enabled ? 'Gemini · ' + esc(aiInfo.model) : 'Demo answers · AI key not set'}`;
 }
+
+/** Voice command: ask Talk AI a question about the camera view. */
+export const askTalk = (question) => ask(question);

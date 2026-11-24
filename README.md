@@ -30,9 +30,11 @@ Put `GEMINI_API_KEY=...` in `backend/.env` (git-ignored) to enable the AI featur
 - `public/js/payment.js` — Mode 3: QR / UPI scanner that explains payee, app and amount aloud; change calculator
 - `public/js/navigation.js` — Mode 4: Leaflet map, search, turn-by-turn speech with re-routing, simulated walk, where am I / where is it, indoor metro demo
 - `public/js/talk.js` — Mode 5: ask by voice (speech recognition) or text about the current camera frame
+- `public/js/voice.js` — global voice commands (top-bar mic or V): read this, where am I, take me to…, check this note, scan QR, mode switches; anything else goes to Talk AI
+- `public/manifest.webmanifest`, `public/icon.svg` — add to home screen, opens full-screen
 - `public/js/api.js` — API base URL, image upload helpers, box drawing
 - `public/js/modes.js`, `store.js`, `speech.js`, `camera.js` — modes, saved data, speech and beeps, camera
 
 ## Keyboard (temple controls)
 
-Space: next mode · 1–5: jump to a mode · R: repeat · Esc: stop speaking · C: camera on/off
+Space: next mode · 1–5: jump to a mode · V: voice command · R: repeat · Esc: stop speaking · C: camera on/off

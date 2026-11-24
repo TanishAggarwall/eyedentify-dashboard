@@ -49,6 +49,8 @@ export function repeatLast() { if (lastSpoken) speak(lastSpoken, { force: true }
 /** Vibration pattern as a haptic cue (Android Chrome supports this; iOS ignores it). */
 export function vibrate(pattern = [120]) {
   if (!getSettings().vibrate) return false;
+  // Browsers only allow vibration after the user has tapped the page at least once.
+  if (navigator.userActivation && !navigator.userActivation.hasBeenActive) return false;
   return navigator.vibrate?.(pattern) ?? false;
 }
 export const vibrationSupported = 'vibrate' in navigator;

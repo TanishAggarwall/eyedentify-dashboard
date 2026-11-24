@@ -453,3 +453,18 @@ export function initNavigation() {
   initCompass();
   renderIndoor();
 }
+
+/** Voice commands: "where am I" and "take me to …" (search, then route to the best match). */
+export { whereAmI };
+export async function goTo(query) {
+  unlockAudio();
+  try {
+    await ensureMap();
+    if (!pos) await locate({ announce: false });
+    $('#nav-q').value = query;
+    const data = await getJSON(`/api/nav/search?q=${encodeURIComponent(query)}&lat=${pos.lat}&lon=${pos.lon}`);
+    if (!data.results.length) { speak(`I couldn't find ${query} nearby.`); return; }
+    $('#nav-results').innerHTML = '';
+    await planRoute(data.results[0]);
+  } catch (err) { speak(err.message); }
+}

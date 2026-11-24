@@ -215,3 +215,6 @@ export function initReading() {
     renderText();
   });
 }
+
+/** Voice command: read whatever the camera sees now. */
+export const readNow = () => runOcr('camera');

@@ -1,0 +1,15 @@
+{
+  "name": "EYEDENTIFY ONE",
+  "short_name": "Eyedentify",
+  "description": "Companion for the EYEDENTIFY ONE smart glasses: detection, reading, payments, navigation and Talk AI using your phone's camera.",
+  "start_url": "/#overview",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0d0c11",
+  "theme_color": "#0d0c11",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}

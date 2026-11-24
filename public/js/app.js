@@ -8,6 +8,7 @@ import { initReading } from './reading.js';
 import { initPayment } from './payment.js';
 import { initTalk } from './talk.js';
 import { initNavigation } from './navigation.js';
+import { initVoice } from './voice.js';
 import { getHealth } from './api.js';
 
 const $ = (sel, root = document) => root.querySelector(sel);
@@ -40,7 +41,7 @@ function currentView() {
   const id = location.hash.slice(1);
   return VIEW_IDS.includes(id) ? id : 'overview';
 }
-function route() {
+function route(e) {
   const id = currentView();
   $$('.view').forEach((v) => { v.hidden = v.id !== `view-${id}`; });
   $$('.nav-item').forEach((a) => {
@@ -54,7 +55,10 @@ function route() {
   // Opening a mode page makes it the active mode, like switching mode on the glasses.
   if (modeById(id) && getSettings().mode !== id) setMode(id, { speakIt: false });
   window.scrollTo({ top: 0 });
-  view?.querySelector('h1')?.setAttribute('tabindex', '-1');
+  const h1 = view?.querySelector('h1');
+  h1?.setAttribute('tabindex', '-1');
+  // On page changes (not the first load), move focus to the new heading so screen readers announce it.
+  if (e && h1) h1.focus({ preventScroll: true });
 }
 
 function openMenu() {
@@ -384,6 +388,7 @@ function init() {
   initPayment();
   initTalk();
   initNavigation();
+  initVoice();
 
   camera.attach($('#overview-video'));
   camera.onCameraChange(renderCamera);

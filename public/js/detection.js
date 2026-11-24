@@ -414,3 +414,6 @@ export function initDetection() {
   renderList();
   setRunningUI();
 }
+
+/** Voice command: turn detection on (does nothing if it's already on). */
+export function startDetection() { if (!wanted) toggle(); }
