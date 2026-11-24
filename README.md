@@ -7,6 +7,7 @@
 <br>
 
 ![Status](https://img.shields.io/badge/STATUS-LIVE%20DEMO-8B55F7?style=for-the-badge&labelColor=000000)
+![Hackathon](https://img.shields.io/badge/NEXHACK-2.0-8B55F7?style=for-the-badge&labelColor=000000)
 ![Hardware](https://img.shields.io/badge/GLASSES-PHONE%20STAND--IN-8B55F7?style=for-the-badge&labelColor=000000)
 ![Cloud](https://img.shields.io/badge/BACKEND-NORTHFLANK-8B55F7?style=for-the-badge&labelColor=000000)
 
@@ -41,7 +42,7 @@
 </div>
 <br>
 
-> EYEDENTIFY ONE is Team Percevia's pair of AI smart glasses for blind and low-vision users. This repository is its **companion dashboard**: while the glasses hardware is offline, the **phone's camera, speaker and microphone stand in for the glasses**, and a cloud backend runs the AI. Point the phone, and EYEDENTIFY speaks what is ahead and how far away it is, reads signs and labels aloud, explains UPI QR codes and banknotes, guides walks turn by turn, and answers spoken questions about the scene, all with a voice-first, screen-reader-friendly interface.
+> EYEDENTIFY ONE is Team Goal Digger's pair of AI smart glasses for blind and low-vision users. This repository is its **companion dashboard**: while the glasses hardware is offline, the **phone's camera, speaker and microphone stand in for the glasses**, and a cloud backend runs the AI. Point the phone, and EYEDENTIFY speaks what is ahead and how far away it is, reads signs and labels aloud, explains UPI QR codes and banknotes, guides walks turn by turn, and answers spoken questions about the scene, all with a voice-first, screen-reader-friendly interface. Built for [**NexHack 2.0**](https://unstop.com/hackathons/nexhack-20-geeta-university-naultha-panipat-1733198) at Geeta University, Naultha, Panipat.
 
 <div align="center">
 <img src="https://capsule-render.vercel.app/api?type=rect&color=0:8B55F7,100:2E1065&height=4&width=1200" width="100%"/>
@@ -122,14 +123,16 @@ Detection started on-device, but on mid-range phones it was slow and unreliable,
 
 <div align="center">
 
-**Team Name: Percevia**
+**Team Name: Goal Digger**
 
-| 👤 Member | ✉️ Email | 🛠️ Role |
-|:---:|:---:|:---:|
-| Tanish Aggarwal | tanishaggarwal.in@gmail.com | AI & Development |
-| _Add member_ | | |
-| _Add member_ | | |
-| _Add member_ | | |
+[![NexHack 2.0](https://img.shields.io/badge/NEXHACK%202.0-GEETA%20UNIVERSITY%2C%20PANIPAT-8B55F7?style=for-the-badge&labelColor=000000)](https://unstop.com/hackathons/nexhack-20-geeta-university-naultha-panipat-1733198)
+
+| 👤 Member |
+|:---:|
+| Manan Garg |
+| Tanish Aggarwal |
+| Yash Goel |
+| Piyush Gupta |
 
 </div>
 
