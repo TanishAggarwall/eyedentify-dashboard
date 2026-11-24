@@ -9,6 +9,9 @@ Serves the dashboard (public/) and the detection API from one HTTPS origin:
   POST /api/ai/read       JSON {image}           -> text, line by line (Gemini; falls back to OCR)
   POST /api/ai/translate  JSON {text, target}    -> translation (Gemini)
   POST /api/ai/banknote   JSON {image}           -> banknotes seen and their total (Gemini)
+  GET  /api/nav/search?q=&lat=&lon=              -> nearby places (OpenStreetMap Nominatim)
+  GET  /api/nav/reverse?lat=&lon=                -> "where am I", as a spoken sentence
+  GET  /api/nav/route?flat=&flon=&tlat=&tlon=    -> walking route with spoken turn instructions
 Images in JSON are base64-encoded JPEG without a data: prefix.
 
 Run locally:   cd backend && uvicorn app:app --port 8080
@@ -47,6 +50,7 @@ def _load_dotenv(path: Path) -> None:
 _load_dotenv(HERE / ".env")
 
 import ai  # noqa: E402  (reads env vars, so it comes after the .env loader)
+import nav  # noqa: E402
 from detector import YoloDetector  # noqa: E402
 from reader import read_text, scan_codes  # noqa: E402
 # 320-pixel input: ~4x less work than 640, fast enough on a small shared CPU.
@@ -194,6 +198,38 @@ async def ai_translate(body: TranslateBody):
 @app.post("/api/ai/banknote")
 async def ai_banknote(body: ImageBody):
     return await _ai(ai.banknotes, _b64(body.image))
+
+
+# ---------------------------------------------------------------- Navigation (OpenStreetMap)
+
+async def _nav(fn, *args):
+    try:
+        return JSONResponse(await run_in_threadpool(fn, *args), headers={"Cache-Control": "no-store"})
+    except nav.NavError as e:
+        raise HTTPException(e.status, str(e))
+
+
+def _coord(lat: float, lon: float) -> tuple[float, float]:
+    if not (-90 <= lat <= 90 and -180 <= lon <= 180):
+        raise HTTPException(400, "Coordinates are out of range.")
+    return lat, lon
+
+
+@app.get("/api/nav/search")
+async def nav_search(q: str, lat: float = 0.0, lon: float = 0.0):
+    return await _nav(nav.search, q, *_coord(lat, lon))
+
+
+@app.get("/api/nav/reverse")
+async def nav_reverse(lat: float, lon: float):
+    return await _nav(nav.reverse, *_coord(lat, lon))
+
+
+@app.get("/api/nav/route")
+async def nav_route(flat: float, flon: float, tlat: float, tlon: float):
+    _coord(flat, flon)
+    _coord(tlat, tlon)
+    return await _nav(nav.route, flat, flon, tlat, tlon)
 
 
 # The dashboard itself, served last so /api routes take priority.

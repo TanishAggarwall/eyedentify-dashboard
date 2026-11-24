@@ -7,6 +7,7 @@ import { initDetection } from './detection.js';
 import { initReading } from './reading.js';
 import { initPayment } from './payment.js';
 import { initTalk } from './talk.js';
+import { initNavigation } from './navigation.js';
 import { getHealth } from './api.js';
 
 const $ = (sel, root = document) => root.querySelector(sel);
@@ -382,6 +383,7 @@ function init() {
   initReading();
   initPayment();
   initTalk();
+  initNavigation();
 
   camera.attach($('#overview-video'));
   camera.onCameraChange(renderCamera);

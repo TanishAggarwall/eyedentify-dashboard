@@ -50,6 +50,10 @@
       <symbol id="i-vibrate" viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="18" rx="2"/><path d="M3 8v8M21 8v8"/></symbol>
       <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></symbol>
       <symbol id="i-stop" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="1.5"/></symbol>
+      <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5z"/></symbol>
+      <symbol id="i-turn-left" viewBox="0 0 24 24"><path d="M18 20v-7a4 4 0 0 0-4-4H5"/><path d="m9 5-4 4 4 4"/></symbol>
+      <symbol id="i-turn-right" viewBox="0 0 24 24"><path d="M6 20v-7a4 4 0 0 1 4-4h9"/><path d="m15 5 4 4-4 4"/></symbol>
+      <symbol id="i-flag" viewBox="0 0 24 24"><path d="M5 21V4"/><path d="M5 4h11l-2 4 2 4H5"/></symbol>
       <symbol id="i-repeat" viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 14-5.3L20 9"/><path d="M20 4v5h-5"/><path d="M20 12a8 8 0 0 1-14 5.3L4 15"/><path d="M4 20v-5h5"/></symbol>
       <symbol id="i-thermo" viewBox="0 0 24 24"><path d="M14 14.8V5a2 2 0 0 0-4 0v9.8a4 4 0 1 0 4 0z"/></symbol>
       <symbol id="i-sparkle" viewBox="0 0 24 24"><path d="M12 3l2 6 6 2-6 2-2 6-2-6-6-2 6-2z"/></symbol>
@@ -413,9 +417,61 @@
             </article>
           </div>
         </section>
-        <section class="view" id="view-navigation-mode" data-title="AI navigation" hidden>
-          <div class="page-heading"><div><span class="eyebrow">MODE 4</span><h1>AI <em>navigation</em></h1><p class="lede">Spoken directions outdoors, and step-by-step guidance indoors.</p></div></div>
-          <article class="card upcoming" data-upcoming="navigation-mode"></article>
+        <section class="view" id="view-navigation-mode" data-title="AI navigation" hidden aria-labelledby="nav-title">
+          <div class="page-heading"><div><span class="eyebrow">MODE 4 · AI NAVIGATION</span><h1 id="nav-title">Get there, turn by turn.</h1><p class="lede">Spoken walking directions outdoors, and step-by-step guidance indoors.</p></div></div>
+          <div class="context-line">
+            <span><i class="dot"></i>Maps and walking routes from OpenStreetMap, through the EYEDENTIFY server.</span>
+            <span class="soft-badge" id="nav-loc-badge"><svg class="icon"><use href="#i-pin"/></svg>Location off</span>
+          </div>
+
+          <div class="det-grid">
+            <article class="card nav-map-card">
+              <div class="card-label"><svg class="icon"><use href="#i-nav"/></svg>MAP<i class="status-dot" id="nav-dot"></i></div>
+              <div class="nav-map" id="nav-map" role="img" aria-label="Map of your surroundings and route"></div>
+              <div class="det-controls">
+                <div class="button-row tight">
+                  <button class="button outline" id="nav-locate"><svg class="icon"><use href="#i-pin"/></svg>Find me</button>
+                  <button class="button outline" id="nav-whereami"><svg class="icon"><use href="#i-volume"/></svg>Where am I?</button>
+                  <button class="button outline" id="nav-whereis" disabled><svg class="icon"><use href="#i-nav"/></svg>Where is it?</button>
+                </div>
+                <span class="hint" id="nav-meta"></span>
+              </div>
+            </article>
+
+            <article class="card nav-side">
+              <form class="nav-search" id="nav-search" role="search" onsubmit="return false">
+                <input type="search" id="nav-q" placeholder="Where to? e.g. metro station, pharmacy" autocomplete="off" aria-label="Search for a place">
+                <button class="button primary" type="submit">Search</button>
+              </form>
+              <ol class="nav-results" id="nav-results"></ol>
+
+              <div class="nav-guide" id="nav-guide" hidden>
+                <div class="nav-now">
+                  <span class="eyebrow" id="nav-dest-label">ROUTE</span>
+                  <strong id="nav-instruction">—</strong>
+                  <span id="nav-sub">—</span>
+                </div>
+                <div class="button-row tight">
+                  <button class="button primary" id="nav-start"><svg class="icon"><use href="#i-play"/></svg><span>Start guidance</span></button>
+                  <button class="button outline" id="nav-sim" aria-pressed="false"><svg class="icon"><use href="#i-repeat"/></svg><span>Simulated walk</span></button>
+                  <button class="button outline" id="nav-cancel">Cancel</button>
+                </div>
+                <ol class="nav-steps" id="nav-steps"></ol>
+              </div>
+            </article>
+
+            <article class="card indoor-card">
+              <div class="card-heading">
+                <div><h3>Indoor guidance · Rajiv Chowk metro</h3><p>GPS doesn't work well indoors; the glasses would use visual-inertial tracking and beacons. This plays the guidance they would give.</p></div>
+                <span class="badge demo">Demo scene</span>
+              </div>
+              <ol class="indoor-steps" id="indoor-steps"></ol>
+              <div class="button-row tight">
+                <button class="button primary" id="indoor-next"><svg class="icon"><use href="#i-play"/></svg><span>Start the walk-through</span></button>
+                <button class="button outline" id="indoor-reset">Restart</button>
+              </div>
+            </article>
+          </div>
         </section>
         <section class="view" id="view-talk" data-title="Talk AI" hidden aria-labelledby="talk-title">
           <div class="page-heading"><div><span class="eyebrow">MODE 5 · TALK AI</span><h1 id="talk-title">Ask about your world.</h1><p class="lede">“Where did I put my keys?” Ask by voice or by typing, and hear the answer.</p></div></div>
