@@ -1,0 +1,9 @@
+.git
+.claude
+.vercel
+**/__pycache__
+**/*.pyc
+**/*.pt
+public/__test
+*.md
+.env*

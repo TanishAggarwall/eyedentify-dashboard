@@ -1,0 +1,9 @@
+node_modules/
+.vercel/
+.env*
+*.log
+__pycache__/
+*.pyc
+*.pt
+public/__test/
+.claude/

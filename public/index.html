@@ -1,0 +1,429 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#0b0b0c">
+  <meta name="description" content="EYEDENTIFY ONE companion dashboard: real-time detection, reading, payments, navigation and Talk AI using your phone's camera in place of the smart glasses.">
+  <title>EYEDENTIFY ONE · Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- Icon sprite -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+      <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M10 21v-6h4v6"/></symbol>
+      <symbol id="i-radar" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/><path d="M12 12 18.5 5.5"/></symbol>
+      <symbol id="i-book" viewBox="0 0 24 24"><path d="M2 4h7a3 3 0 0 1 3 3v13a2 2 0 0 0-2-2H2z"/><path d="M22 4h-7a3 3 0 0 0-3 3v13a2 2 0 0 1 2-2h8z"/></symbol>
+      <symbol id="i-wallet" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="14" rx="2"/><path d="M2 10h20"/><path d="M16 15h2"/><path d="M6 6V4h12v2"/></symbol>
+      <symbol id="i-nav" viewBox="0 0 24 24"><path d="M3 11 21 3l-8 18-2-8z"/></symbol>
+      <symbol id="i-talk" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 21l1.9-5.4A8 8 0 1 1 21 12z"/><path d="M8 12h.01M12 12h.01M16 12h.01"/></symbol>
+      <symbol id="i-glasses" viewBox="0 0 24 24"><circle cx="6" cy="15" r="4"/><circle cx="18" cy="15" r="4"/><path d="M10 15c1.3-1 2.7-1 4 0"/><path d="M2 15 4.5 6H7"/><path d="M22 15 19.5 6H17"/></symbol>
+      <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+      <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
+      <symbol id="i-camera" viewBox="0 0 24 24"><path d="M4 7h3l2-3h6l2 3h3a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="4"/></symbol>
+      <symbol id="i-camera-off" viewBox="0 0 24 24"><path d="M3 3l18 18"/><path d="M9 4h6l2 3h3a1 1 0 0 1 1 1v9"/><path d="M17 20H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h3"/><path d="M9.5 10.5a4 4 0 0 0 5 5"/></symbol>
+      <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></symbol>
+      <symbol id="i-volume" viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16 9a4 4 0 0 1 0 6M19 6a8 8 0 0 1 0 12"/></symbol>
+      <symbol id="i-battery" viewBox="0 0 24 24"><rect x="2" y="7" width="17" height="10" rx="2"/><path d="M22 11v2"/></symbol>
+      <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></symbol>
+      <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M4 21h16"/></symbol>
+      <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 14h10l1-14"/></symbol>
+      <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+      <symbol id="i-keyboard" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 14h10"/></symbol>
+      <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3 2 20h20z"/><path d="M12 10v4M12 17h.01"/></symbol>
+      <symbol id="i-chip" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"/></symbol>
+      <symbol id="i-cloud" viewBox="0 0 24 24"><path d="M7 18a5 5 0 1 1 1-9.9A6 6 0 0 1 19 10a4 4 0 0 1 0 8z"/></symbol>
+      <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/><path d="m9 12 2 2 4-4"/></symbol>
+      <symbol id="i-tap" viewBox="0 0 24 24"><path d="M9 11V5.5a1.5 1.5 0 0 1 3 0V11"/><path d="M12 10.5a1.5 1.5 0 0 1 3 0V12"/><path d="M15 11.5a1.5 1.5 0 0 1 3 0V15a6 6 0 0 1-6 6h-1a6 6 0 0 1-5-2.7L4 15.5a1.5 1.5 0 0 1 2.5-1.7L9 16"/></symbol>
+      <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+      <symbol id="i-arrow-ne" viewBox="0 0 24 24"><path d="M7 17 17 7M8 7h9v9"/></symbol>
+      <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+      <symbol id="i-arrow-up" viewBox="0 0 24 24"><path d="M12 19V5M6 11l6-6 6 6"/></symbol>
+      <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s7-6 7-12a7 7 0 0 0-14 0c0 6 7 12 7 12z"/><circle cx="12" cy="9" r="2.5"/></symbol>
+      <symbol id="i-vibrate" viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="18" rx="2"/><path d="M3 8v8M21 8v8"/></symbol>
+      <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></symbol>
+      <symbol id="i-stop" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="1.5"/></symbol>
+      <symbol id="i-repeat" viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 14-5.3L20 9"/><path d="M20 4v5h-5"/><path d="M20 12a8 8 0 0 1-14 5.3L4 15"/><path d="M4 20v-5h5"/></symbol>
+      <symbol id="i-thermo" viewBox="0 0 24 24"><path d="M14 14.8V5a2 2 0 0 0-4 0v9.8a4 4 0 1 0 4 0z"/></symbol>
+      <symbol id="i-sparkle" viewBox="0 0 24 24"><path d="M12 3l2 6 6 2-6 2-2 6-2-6-6-2 6-2z"/></symbol>
+    </defs>
+  </svg>
+
+  <div class="shell">
+    <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+      <a class="brand" href="#overview" aria-label="EYEDENTIFY ONE overview">
+        <svg class="icon brand-mark" aria-hidden="true"><use href="#i-eye"/></svg>
+        <span class="brand-text">eyedentify<b>.</b></span>
+      </a>
+
+      <nav id="navigation">
+        <div class="nav-caption">YOUR VISION SPACE</div>
+        <a class="nav-item" href="#overview" data-view="overview"><svg class="icon"><use href="#i-home"/></svg>Overview</a>
+        <div class="nav-caption">MODES</div>
+        <a class="nav-item" href="#detection" data-view="detection"><svg class="icon"><use href="#i-radar"/></svg>Real-time detection<kbd>1</kbd></a>
+        <a class="nav-item" href="#reading" data-view="reading"><svg class="icon"><use href="#i-book"/></svg>Instant reading<kbd>2</kbd></a>
+        <a class="nav-item" href="#payment" data-view="payment"><svg class="icon"><use href="#i-wallet"/></svg>Payment &amp; currency<kbd>3</kbd></a>
+        <a class="nav-item" href="#navigation-mode" data-view="navigation-mode"><svg class="icon"><use href="#i-nav"/></svg>AI navigation<kbd>4</kbd></a>
+        <a class="nav-item" href="#talk" data-view="talk"><svg class="icon"><use href="#i-talk"/></svg>Talk AI<kbd>5</kbd></a>
+        <div class="nav-caption">SYSTEM</div>
+        <a class="nav-item" href="#device" data-view="device"><svg class="icon"><use href="#i-glasses"/></svg>Device &amp; settings</a>
+        <a class="nav-item" href="#history" data-view="history"><svg class="icon"><use href="#i-clock"/></svg>History</a>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <div class="privacy-note">
+          <svg class="icon"><use href="#i-shield"/></svg>
+          <p>A little help seeing.<br>Frames are analysed on your private cloud server and never stored.</p>
+        </div>
+        <div class="team">
+          <span class="team-avatar">P</span>
+          <span>Team Percevia<small>Synapase 3.0</small></span>
+        </div>
+      </div>
+    </aside>
+    <div class="scrim" id="scrim" hidden></div>
+
+    <main id="main" tabindex="-1">
+      <header class="topbar">
+        <button class="icon-btn menu-btn" id="menu-btn" aria-label="Open navigation" aria-controls="sidebar" aria-expanded="false"><svg class="icon"><use href="#i-menu"/></svg></button>
+        <div class="breadcrumb"><span class="crumb-root">My vision space</span><span class="crumb-sep">/</span><strong id="breadcrumb">Overview</strong></div>
+        <div class="top-actions">
+          <span class="pill" id="glasses-pill" title="The glasses hardware is offline. This phone is standing in for it.">
+            <i></i><span>Glasses not connected</span>
+          </span>
+          <button class="mode-chip" id="mode-chip" aria-label="Active mode. Tap to switch to the next mode.">
+            <svg class="icon"><use href="#i-radar"/></svg><span id="mode-chip-label">Detection</span>
+          </button>
+          <button class="button primary" id="camera-btn" aria-pressed="false">
+            <svg class="icon"><use href="#i-camera"/></svg><span id="camera-btn-label">Start camera</span>
+          </button>
+        </div>
+      </header>
+
+      <div class="content">
+        <div id="notice" class="notice" role="alert" hidden></div>
+
+        <!-- ============ OVERVIEW ============ -->
+        <section class="view" id="view-overview" data-title="Overview" aria-labelledby="overview-title">
+          <div class="page-heading">
+            <div>
+              <span class="eyebrow">YOUR EVERYDAY VISION COMPANION</span>
+              <h1 id="overview-title">Your world, described.</h1>
+              <p class="lede">A little guidance. A more confident day.</p>
+            </div>
+            <span class="date-chip" id="date-label"></span>
+          </div>
+          <div class="context-line">
+            <span><i class="dot"></i>Your phone's camera and speaker stand in for the glasses.</span>
+            <span class="soft-badge"><svg class="icon"><use href="#i-cloud"/></svg>Cloud processing</span>
+          </div>
+
+          <div class="overview-grid">
+            <!-- Active mode -->
+            <article class="card active-card">
+              <h3 id="hero-mode">Real-time detection</h3>
+              <p class="card-text" id="hero-mode-desc">Alerts for people, vehicles and obstacles ahead, spoken into the ear they're closest to.</p>
+              <div class="button-row">
+                <a class="button primary" id="hero-open" href="#detection"><svg class="icon"><use href="#i-radar"/></svg>Open mode</a>
+                <button class="button outline" id="temple-tap"><svg class="icon"><use href="#i-tap"/></svg>Temple tap</button>
+              </div>
+              <p class="hint">A temple tap switches to the next mode and says its name. <span class="kbd-hint"><kbd>Space</kbd> does the same.</span></p>
+            </article>
+
+            <!-- Promo with orb -->
+            <article class="card promo">
+              <div class="promo-copy">
+                <span class="eyebrow">A CLEARER WORLD, A LITTLE CLOSER</span>
+                <h2>A world seen.<br>Out loud.</h2>
+                <p>Obstacles, signs, money and directions,<br class="wide-only"> spoken the moment you need them.</p>
+                <a class="button dark" href="#detection">Let's look together <svg class="icon"><use href="#i-arrow-ne"/></svg></a>
+                <span class="promo-foot"><svg class="icon"><use href="#i-sparkle"/></svg>SMALL CUES. REAL INDEPENDENCE.</span>
+              </div>
+              <div class="orb-wrap" aria-hidden="true">
+                <span class="orbit"></span><span class="orbit-dot"></span>
+                <span class="orb"><svg class="icon"><use href="#i-eye"/></svg></span>
+              </div>
+            </article>
+
+            <!-- Camera -->
+            <article class="card camera-card">
+              <div class="card-label"><svg class="icon"><use href="#i-camera"/></svg>YOUR CAMERA<i class="status-dot" id="cam-dot"></i></div>
+              <div class="viewfinder" id="overview-viewfinder">
+                <video id="overview-video" playsinline muted aria-label="Live camera preview"></video>
+                <div class="viewfinder-empty" id="overview-empty">
+                  <svg class="icon xl"><use href="#i-camera"/></svg>
+                  <span>Ready when you are</span>
+                </div>
+                <span class="viewfinder-tag" id="overview-cam-tag" hidden><i></i>LIVE</span>
+              </div>
+              <h3 id="stat-camera">Waiting for your camera.</h3>
+              <p class="card-text small" id="stat-camera-caption">The phone's back camera is used when available.</p>
+              <div class="split-row">
+                <button class="link-btn" data-action="camera-start" id="camera-card-btn">Start camera <svg class="icon"><use href="#i-arrow-ne"/></svg></button>
+                <a class="link-btn muted" href="#device">Device settings</a>
+              </div>
+            </article>
+
+            <!-- Five modes -->
+            <section class="modes-row" aria-labelledby="modes-title">
+              <div class="row-heading">
+                <h3 id="modes-title">Five assistive modes</h3>
+                <p>Tap a mode, or use the temple tap to cycle through them.</p>
+              </div>
+              <div class="mode-grid" id="mode-grid"></div>
+            </section>
+
+            <!-- Stats -->
+            <article class="card stat tint-peach">
+              <div class="stat-top"><h3>Power</h3><svg class="icon"><use href="#i-battery"/></svg></div>
+              <div class="stat-value"><span id="stat-battery">—</span> <small>battery</small></div>
+              <p class="stat-caption" id="stat-battery-caption">This phone's battery</p>
+              <a class="stat-arrow" href="#device" aria-label="Open device settings"><svg class="icon"><use href="#i-arrow-ne"/></svg></a>
+            </article>
+            <article class="card stat tint-lavender">
+              <div class="stat-top"><h3>Response time</h3><svg class="icon"><use href="#i-bolt"/></svg></div>
+              <div class="stat-value"><span id="stat-latency">—</span> <small>ms average</small></div>
+              <p class="stat-caption" id="stat-latency-caption">Measured once a mode is running</p>
+              <a class="stat-arrow" href="#detection" aria-label="Open real-time detection"><svg class="icon"><use href="#i-arrow-ne"/></svg></a>
+            </article>
+            <article class="card stat tint-mint">
+              <div class="stat-top"><h3>Moments today</h3><svg class="icon"><use href="#i-clock"/></svg></div>
+              <div class="stat-value"><span id="stat-today">0</span> <small>alerts &amp; answers</small></div>
+              <p class="stat-caption" id="stat-today-caption">Alerts, readings and answers</p>
+              <a class="stat-arrow" href="#history" aria-label="Open history"><svg class="icon"><use href="#i-arrow-ne"/></svg></a>
+            </article>
+
+            <!-- Recent activity -->
+            <article class="card feed-card">
+              <div class="card-heading">
+                <div><h3>Little moments from your day</h3><p>What the glasses noticed and said.</p></div>
+                <a class="link" href="#history">View all <svg class="icon"><use href="#i-arrow-ne"/></svg></a>
+              </div>
+              <ol class="feed" id="overview-feed" aria-live="off"></ol>
+            </article>
+
+            <!-- Temple controls promo -->
+            <article class="card guide tint-sage">
+              <span class="eyebrow">ONE TAP AT A TIME</span>
+              <h2>A gentle tap.<br>The right mode.</h2>
+              <p class="card-text small">Next: <span id="next-mode-label">Instant reading</span></p>
+              <a class="button dark" href="#device">See temple controls <svg class="icon"><use href="#i-arrow-ne"/></svg></a>
+              <svg class="sunburst" viewBox="0 0 120 120" aria-hidden="true"><g id="burst"></g></svg>
+            </article>
+
+            <!-- Ask bar -->
+            <article class="card ask-bar">
+              <span class="ask-icon"><svg class="icon"><use href="#i-mic"/></svg></span>
+              <div>
+                <h3>A question on your mind?</h3>
+                <p>“Where did I put my keys?” or “What does this sign say?”</p>
+              </div>
+              <a class="button primary" href="#talk">Ask away <svg class="icon"><use href="#i-arrow"/></svg></a>
+            </article>
+          </div>
+        </section>
+
+        <!-- ============ MODE PAGES (filled in later build steps) ============ -->
+        <section class="view" id="view-detection" data-title="Real-time detection" hidden aria-labelledby="det-title">
+          <div class="page-heading"><div><span class="eyebrow">MODE 1 · REAL-TIME DETECTION</span><h1 id="det-title">What's ahead of you.</h1><p class="lede">People, vehicles and obstacles, spoken into the ear they're closest to.</p></div></div>
+          <div class="context-line">
+            <span><i class="dot"></i>Pre-trained YOLO11n runs on the EYEDENTIFY cloud server. Frames are analysed, then discarded.</span>
+            <span class="soft-badge" id="det-model"><svg class="icon"><use href="#i-chip"/></svg>Cloud detector not connected</span>
+          </div>
+
+          <div class="det-grid">
+            <article class="card det-view">
+              <div class="card-label"><svg class="icon"><use href="#i-radar"/></svg>LIVE VIEW<i class="status-dot" id="det-dot"></i></div>
+              <div class="viewfinder det-finder">
+                <video id="det-video" playsinline muted aria-hidden="true"></video>
+                <canvas id="det-canvas" aria-hidden="true"></canvas>
+                <div class="viewfinder-empty" id="det-empty">
+                  <svg class="icon xl"><use href="#i-radar"/></svg>
+                  <span id="det-empty-text">Start detecting to scan what's in front of you.</span>
+                </div>
+                <div class="det-banner" id="det-banner" role="alert" hidden></div>
+              </div>
+              <div class="det-controls">
+                <button class="button primary" id="det-start"><svg class="icon"><use href="#i-radar"/></svg><span>Start detecting</span></button>
+                <div class="det-stats" aria-live="off">
+                  <span><small>Speed</small><strong id="det-speed">—</strong></span>
+                  <span><small>In view</small><strong id="det-count">0</strong></span>
+                  <span><small>Alerts</small><strong id="det-alerts">0</strong></span>
+                </div>
+              </div>
+            </article>
+
+            <article class="card det-side">
+              <div class="card-heading"><div><h3>Ahead of you</h3><p>Closest first. Distances are estimates.</p></div></div>
+              <ol class="ahead-list" id="det-list"><li class="empty">Nothing detected yet.</li></ol>
+              <div class="det-settings">
+                <label class="field">
+                  <span>Warn me within <output id="det-range-out">3 m</output></span>
+                  <input type="range" id="det-range" min="1" max="6" step="0.5" value="3">
+                </label>
+                <label class="switch"><input type="checkbox" id="det-beep"><span class="track"></span><span>Directional beeps (left / right ear)</span></label>
+              </div>
+            </article>
+
+            <article class="card det-demos">
+              <div class="card-heading">
+                <div><h3>Hazard scenes</h3><p>YOLO's everyday classes don't include stairs, curbs or drop-offs, which the glasses' depth sensor would catch. These play the alert the glasses would give.</p></div>
+                <span class="badge demo">Demo scenes</span>
+              </div>
+              <div class="demo-grid" id="det-demos"></div>
+            </article>
+
+            <article class="card det-log-card">
+              <div class="card-heading">
+                <div><h3>Recent alerts</h3><p>Spoken in this session and earlier.</p></div>
+                <a class="link" href="#history">View all <svg class="icon"><use href="#i-arrow-ne"/></svg></a>
+              </div>
+              <ol class="feed" id="det-log"></ol>
+            </article>
+          </div>
+        </section>
+        <section class="view" id="view-reading" data-title="Instant reading" hidden>
+          <div class="page-heading"><div><span class="eyebrow">MODE 2</span><h1>Instant <em>reading</em></h1><p class="lede">Point at a sign, label or page and hear it read aloud.</p></div></div>
+          <article class="card upcoming" data-upcoming="reading"></article>
+        </section>
+        <section class="view" id="view-payment" data-title="Payment & currency" hidden>
+          <div class="page-heading"><div><span class="eyebrow">MODE 3</span><h1>Payment &amp; <em>currency</em></h1><p class="lede">Check banknotes and QR codes before you pay.</p></div></div>
+          <article class="card upcoming" data-upcoming="payment"></article>
+        </section>
+        <section class="view" id="view-navigation-mode" data-title="AI navigation" hidden>
+          <div class="page-heading"><div><span class="eyebrow">MODE 4</span><h1>AI <em>navigation</em></h1><p class="lede">Spoken directions outdoors, and step-by-step guidance indoors.</p></div></div>
+          <article class="card upcoming" data-upcoming="navigation-mode"></article>
+        </section>
+        <section class="view" id="view-talk" data-title="Talk AI" hidden>
+          <div class="page-heading"><div><span class="eyebrow">MODE 5</span><h1>Talk <em>AI</em></h1><p class="lede">Ask about what's in front of you, and hear the answer.</p></div></div>
+          <article class="card upcoming" data-upcoming="talk"></article>
+        </section>
+
+        <!-- ============ DEVICE ============ -->
+        <section class="view" id="view-device" data-title="Device & settings" hidden aria-labelledby="device-title">
+          <div class="page-heading"><div><span class="eyebrow">SYSTEM</span><h1 id="device-title">Device &amp; <em>settings</em></h1><p class="lede">How this phone is standing in for the glasses, and how they talk to you.</p></div></div>
+
+          <div class="device-grid">
+            <article class="card glasses-card">
+              <div class="card-heading">
+                <div><h3>EYEDENTIFY ONE</h3><p>Hardware offline · running on this phone</p></div>
+                <span class="pill offline"><i></i>Glasses offline</span>
+              </div>
+              <div class="glasses-art" aria-hidden="true">
+                <svg viewBox="0 0 320 120">
+                  <path class="frame" d="M20 40 Q20 26 34 26 H286 Q300 26 300 40 V58 Q300 92 266 92 H200 Q182 92 174 72 L168 58 Q160 50 152 58 L146 72 Q138 92 120 92 H54 Q20 92 20 58 Z"/>
+                  <circle class="lens" cx="78" cy="52" r="12"/><circle class="lens" cx="112" cy="52" r="12"/>
+                  <circle class="lens-dot" id="art-cam-l" cx="78" cy="52" r="5"/><circle class="lens-dot" id="art-cam-r" cx="112" cy="52" r="5"/>
+                  <path class="trace" d="M40 70 H70 L80 78 H130"/><path class="trace" d="M40 78 H64 L74 86 H120"/>
+                  <rect class="pod" x="196" y="34" width="90" height="46" rx="10"/>
+                  <circle class="led" id="art-led" cx="276" cy="44" r="3"/>
+                </svg>
+              </div>
+              <div class="status-list" id="status-list"></div>
+            </article>
+
+            <article class="card">
+              <div class="card-heading"><div><h3>Power &amp; sensors</h3><p>Read from this phone while the glasses are offline.</p></div></div>
+              <div class="metric-pair">
+                <div class="metric">
+                  <svg class="icon"><use href="#i-battery"/></svg>
+                  <div><span class="metric-label">Battery</span><strong id="dev-battery">—</strong><small id="dev-battery-note">Checking…</small></div>
+                </div>
+                <div class="metric">
+                  <svg class="icon"><use href="#i-thermo"/></svg>
+                  <div><span class="metric-label">Frame temperature</span><strong id="dev-temp">—</strong><small id="dev-temp-note">Needs the glasses' sensor. Phones don't share their temperature with web pages.</small></div>
+                </div>
+              </div>
+              <div class="battery-bar" aria-hidden="true"><span id="dev-battery-bar"></span></div>
+            </article>
+
+            <article class="card settings-card">
+              <div class="card-heading"><div><h3>Voice &amp; feedback</h3><p>How the glasses speak and signal you.</p></div></div>
+              <form id="settings-form" class="settings" onsubmit="return false">
+                <label class="field">
+                  <span>Voice</span>
+                  <select id="set-voice"><option value="">System default</option></select>
+                </label>
+                <label class="field">
+                  <span>Speaking speed <output id="set-rate-out">1.0×</output></span>
+                  <input type="range" id="set-rate" min="0.6" max="2" step="0.1" value="1">
+                </label>
+                <label class="switch"><input type="checkbox" id="set-speak"><span class="track"></span><span>Speak alerts and answers</span></label>
+                <label class="switch"><input type="checkbox" id="set-vibrate"><span class="track"></span><span>Vibrate on alerts (haptic cue)</span></label>
+                <label class="switch"><input type="checkbox" id="set-large"><span class="track"></span><span>Large text</span></label>
+                <label class="switch"><input type="checkbox" id="set-contrast"><span class="track"></span><span>High contrast</span></label>
+                <div class="button-row">
+                  <button type="button" class="button ghost" id="test-voice"><svg class="icon"><use href="#i-volume"/></svg>Test voice</button>
+                  <button type="button" class="button ghost" id="test-vibrate"><svg class="icon"><use href="#i-vibrate"/></svg>Test vibration</button>
+                </div>
+              </form>
+            </article>
+
+            <article class="card">
+              <div class="card-heading"><div><h3>Temple controls</h3><p>Keyboard shortcuts stand in for the glasses' touch strip.</p></div><svg class="icon muted-icon"><use href="#i-keyboard"/></svg></div>
+              <dl class="shortcuts">
+                <div><dt><kbd>Space</kbd></dt><dd>Temple tap: next mode</dd></div>
+                <div><dt><kbd>1</kbd>–<kbd>5</kbd></dt><dd>Jump to a mode</dd></div>
+                <div><dt><kbd>R</kbd></dt><dd>Repeat the last thing said</dd></div>
+                <div><dt><kbd>Esc</kbd></dt><dd>Stop speaking</dd></div>
+                <div><dt><kbd>C</kbd></dt><dd>Camera on / off</dd></div>
+              </dl>
+              <div class="button-row">
+                <button class="button ghost" id="repeat-btn"><svg class="icon"><use href="#i-repeat"/></svg>Repeat last</button>
+                <button class="button ghost" id="stop-speech-btn"><svg class="icon"><use href="#i-stop"/></svg>Stop speaking</button>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <!-- ============ HISTORY ============ -->
+        <section class="view" id="view-history" data-title="History" hidden aria-labelledby="history-title">
+          <div class="page-heading"><div><span class="eyebrow">SYSTEM</span><h1 id="history-title">Your <em>history</em></h1><p class="lede">Everything the glasses noticed, read and answered. Stored only in this browser.</p></div></div>
+
+          <div class="history-stats" id="history-stats"></div>
+
+          <article class="card">
+            <div class="history-toolbar">
+              <div class="filter-row" role="group" aria-label="Filter by mode" id="history-filters"></div>
+              <div class="button-row">
+                <button class="button ghost" id="export-csv"><svg class="icon"><use href="#i-download"/></svg>Export CSV</button>
+                <button class="button danger-ghost" id="clear-history"><svg class="icon"><use href="#i-trash"/></svg>Clear</button>
+              </div>
+            </div>
+            <ol class="feed history-list" id="history-list"></ol>
+          </article>
+        </section>
+
+        <footer class="footer">
+          <span class="footer-brand"><svg class="icon"><use href="#i-eye"/></svg>EYEDENTIFY</span>
+          <span>More independence. At your own pace.</span>
+          <span class="footer-right">Assistive vision prototype · Team Percevia</span>
+        </footer>
+      </div>
+    </main>
+  </div>
+
+  <div id="toast" class="toast" role="status" hidden></div>
+  <div id="announcer" class="sr-only" aria-live="polite"></div>
+
+  <dialog id="confirm-dialog" aria-labelledby="confirm-title">
+    <form method="dialog" class="dialog-body">
+      <h2 id="confirm-title">Clear history?</h2>
+      <p id="confirm-text">This removes every saved event from this browser. It can't be undone.</p>
+      <div class="button-row end">
+        <button class="button ghost" value="cancel">Cancel</button>
+        <button class="button danger" value="ok">Clear history</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
