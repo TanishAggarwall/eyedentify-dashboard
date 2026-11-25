@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://capsule-render.vercel.app/api?type=waving&color=0:8B55F7,100:2E1065&height=230&section=header&text=EYEDENTIFY%20ONE&fontSize=60&fontColor=FFFFFF&animation=fadeIn&fontAlignY=32&desc=AI%20Smart%20Glasses%20for%20Blind%20and%20Low-Vision%20People&descAlignY=52&descSize=17" width="100%"/>
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:8B55F7,100:2E1065&height=230&section=header&text=EYEDENTIFY%20&fontSize=60&fontColor=FFFFFF&animation=fadeIn&fontAlignY=32&desc=AI%20Smart%20Glasses%20for%20Blind%20and%20Low-Vision%20People&descAlignY=52&descSize=17" width="100%"/>
 
 <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=21&duration=3000&pause=900&color=8B55F7&center=true&vCenter=true&width=760&lines=Wear+it.+Hear+the+world.;120%C2%B0+HDR+Camera+%2B+Infrared+Depth;Bone+Conduction+Spatial+Audio;Tap+the+temple.+Say+a+command." alt="Typing SVG" />
 
@@ -29,7 +29,7 @@
 
 <br><br>
 
-<img src="docs/eyedentify-one-glasses.jpg" alt="EYEDENTIFY ONE smart glasses: matte black frame with the front camera and depth sensor on the left lens and an EYEDENTIFY-branded electronics housing" width="85%"/>
+<img src="docs/eyedentify-one-glasses.jpg" alt="EYEDENTIFY smart glasses: matte black frame with the front camera and depth sensor on the left lens and an EYEDENTIFY-branded electronics housing" width="85%"/>
 
 <sub><i>EYEDENTIFY · concept render</i></sub>
 
