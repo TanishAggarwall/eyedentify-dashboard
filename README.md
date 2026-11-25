@@ -31,7 +31,7 @@
 
 <img src="docs/eyedentify-one-glasses.jpg" alt="EYEDENTIFY ONE smart glasses: matte black frame with the front camera and depth sensor on the left lens and an EYEDENTIFY-branded electronics housing" width="85%"/>
 
-<sub><i>EYEDENTIFY ONE · concept render</i></sub>
+<sub><i>EYEDENTIFY · concept render</i></sub>
 
 </div>
 
