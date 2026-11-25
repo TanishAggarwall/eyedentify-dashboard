@@ -7,6 +7,7 @@ import { readNow } from './reading.js';
 import { checkBanknote, startQrScan } from './payment.js';
 import { whereAmI, goTo } from './navigation.js';
 import { askTalk } from './talk.js';
+import { parseCommand } from './commands.js';
 
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 export const voiceSupported = Boolean(SR);
@@ -33,41 +34,26 @@ function goThen(hash, action) {
   setTimeout(action, 350);
 }
 
-const PAGES = { overview: 'overview', home: 'overview', history: 'history', settings: 'device', device: 'device' };
-const MODES = { detection: 'detection', obstacle: 'detection', reading: 'reading', read: 'reading', payment: 'payment', money: 'payment', navigation: 'navigation-mode', map: 'navigation-mode', talk: 'talk', chat: 'talk' };
-
-/** Turn a spoken phrase into an action. Exported for testing. */
+/** Turn a spoken phrase into a runnable action (the parsing itself lives in commands.js). */
 export function route(phrase) {
-  const p = phrase.toLowerCase().replace(/[.!?,]/g, ' ').replace(/\s+/g, ' ').trim();
-  let m;
-  if (/^(stop|quiet|be quiet|silence|shut up|cancel)$/.test(p)) return { name: 'stop', run: () => stopSpeaking() };
-  if (/^(repeat|again|say (that|it) again|what did you say)$/.test(p)) return { name: 'repeat', run: () => repeatLast() };
-  if (/^help$|what can (i|you) (say|do)|^commands$/.test(p)) return { name: 'help', run: () => speak(HELP, { force: true }) };
-  if (/(start|turn on|open|switch on) (the )?camera/.test(p)) return { name: 'camera on', run: () => camera.start().then(() => speak('Camera on.')).catch((e) => speak(e.message)) };
-  if (/(stop|turn off|close|switch off) (the )?camera/.test(p)) return { name: 'camera off', run: () => { camera.stop(); speak('Camera off.'); } };
-  if (/where am i|my location|where are we/.test(p)) return { name: 'where am I', run: () => goThen('navigation-mode', whereAmI) };
-  if ((m = p.match(/^(?:please )?(?:take me to|navigate to|directions to|guide me to|go to|how do i get to|find)\s+(?:the |a |an |nearest )?(.+)$/)) && !PAGES[m[1]] && !MODES[m[1].replace(/ mode$/, '')]) {
-    const place = m[1];
-    return { name: `navigate to ${place}`, run: () => goThen('navigation-mode', () => goTo(place)) };
-  }
-  if (/\b(note|notes|banknote|cash|currency|rupee|rupees|money)\b/.test(p) && /(check|what|which|how much|identify|is this|count)/.test(p)) {
-    return { name: 'banknote check', run: () => goThen('payment', checkBanknote) };
-  }
-  if (/\b(scan|qr|upi)\b/.test(p)) return { name: 'scan QR', run: () => goThen('payment', startQrScan) };
-  if (/^(read\b(?! mode)|what does (this|it|the sign|the label) say)/.test(p)) {
-    return { name: 'read', run: () => goThen('reading', readNow) };
-  }
-  if ((m = p.match(/^(?:open |go to |switch to |start )?(\w+) mode$/)) && MODES[m[1]]) {
-    const hash = MODES[m[1]];
-    return { name: `${m[1]} mode`, run: () => { location.hash = hash; if (hash === 'detection') setTimeout(startDetection, 350); } };
-  }
-  if (/^(start )?(detecting|detection|obstacle detection)$|what'?s ahead|any obstacles/.test(p)) {
-    return { name: 'detection', run: () => goThen('detection', startDetection) };
-  }
-  if ((m = p.match(/^(?:open |go to |show )?(?:the )?(overview|home|history|settings|device)$/))) {
-    return { name: m[1], run: () => { location.hash = PAGES[m[1]]; speak(`${m[1]}.`); } };
-  }
-  return { name: 'question', run: () => goThen('talk', () => askTalk(phrase)) };
+  const cmd = parseCommand(phrase);
+  const run = {
+    stop: () => stopSpeaking(),
+    repeat: () => repeatLast(),
+    help: () => speak(HELP, { force: true }),
+    'camera-on': () => camera.start().then(() => speak('Camera on.')).catch((e) => speak(e.message)),
+    'camera-off': () => { camera.stop(); speak('Camera off.'); },
+    'where-am-i': () => goThen('navigation-mode', whereAmI),
+    navigate: () => goThen('navigation-mode', () => goTo(cmd.place)),
+    banknote: () => goThen('payment', checkBanknote),
+    'scan-qr': () => goThen('payment', startQrScan),
+    read: () => goThen('reading', readNow),
+    mode: () => { location.hash = cmd.hash; if (cmd.hash === 'detection') setTimeout(startDetection, 350); },
+    detection: () => goThen('detection', startDetection),
+    page: () => { location.hash = cmd.hash; speak(`${cmd.page}.`); },
+    question: () => goThen('talk', () => askTalk(phrase)),
+  }[cmd.action];
+  return { name: cmd.name, run };
 }
 
 function setListening(on) {
