@@ -110,12 +110,34 @@ flowchart TD
 | Mode | What the wearer hears | Sensors used |
 |---|---|---|
 | 🎯 **Real-time detection** | "Person ahead, about 2 metres", with a beep in the ear it's closest to, faster as it gets nearer. Alerts for stairs, kerbs and obstacles | Camera + infrared depth |
-| 📖 **Instant reading** | Signs, labels, menus and pages read aloud at 1.0–3.5× speed; translation into other languages | Camera + OCR |
+| 📖 **Instant reading** | Signs, labels, menus and pages read aloud at 1.0–3.5× speed; translation into 8 Indian languages and English | Camera + OCR |
 | 💳 **Payment & currency** | Banknote values, and who a UPI QR code pays: name, UPI ID, app, amount | Camera |
 | 🧭 **AI navigation** | Turn-by-turn walking directions, "where am I", and clock-face directions ("the exit is at 2 o'clock") indoors and out | GNSS + IMU + beacons |
 | 💬 **Talk AI** | Answers to "what's in front of me?" or "where did I put my keys?", in English or हिन्दी | Camera + mic |
 
 **Controls:** tap the temple to cycle modes · say *read this · where am I · take me to … · check this note · scan QR · repeat · stop*.
+
+<div align="center">
+<img src="https://capsule-render.vercel.app/api?type=rounded&color=0:8B55F7,100:2E1065&height=90&section=header&text=Feature%20%E2%86%92%20Code&fontSize=34&fontColor=FFFFFF&fontAlignY=60&width=1200" width="100%"/>
+</div>
+
+Every feature above is implemented in this repository. This table points to the code, the API endpoint and the automated tests for each one.
+
+| Feature | Code | API endpoint | Tests |
+|---|---|---|---|
+| 🎯 **Real-time obstacle detection** | [`backend/detector.py`](backend/detector.py) (YOLO11n on ONNX Runtime, 80 object classes, NMS) · [`public/js/detection.js`](public/js/detection.js) (distance and direction estimate, spoken alerts, left/right beeps, vibration) | `POST /api/detect` | [`test_api.py`](backend/tests/test_api.py) `test_detect_returns_normalised_boxes` · [`test_units.py`](backend/tests/test_units.py) `test_nms_*` |
+| 📖 **Text reading (OCR)** | [`backend/reader.py`](backend/reader.py) `read_text` (RapidOCR) · [`backend/ai.py`](backend/ai.py) `read` (Gemini, falls back to OCR) · [`public/js/reading.js`](public/js/reading.js) | `POST /api/read` · `POST /api/ai/read` | `test_read_finds_printed_text` · `test_ai_read_falls_back_to_ocr_without_a_key` · `test_tidy_ocr_text` |
+| 🌐 **Translation** | [`backend/ai.py`](backend/ai.py) `translate` · language picker in [`public/index.html`](public/index.html) (Hindi, Tamil, Telugu, Bengali, Marathi, Kannada, Gujarati, Punjabi, English) | `POST /api/ai/translate` | — (calls Gemini, not run in CI) |
+| 💳 **Payment: UPI / QR codes** | [`backend/reader.py`](backend/reader.py) `scan_codes` (zxing-cpp) · [`public/js/payment-logic.js`](public/js/payment-logic.js) `parseCode` (payee, UPI ID, app, amount, scam warnings) · [`public/js/payment.js`](public/js/payment.js) | `POST /api/scan` | `test_scan_decodes_a_upi_qr_code` · [`frontend.test.mjs`](tests/frontend.test.mjs) UPI tests |
+| 💵 **Currency: banknotes and change** | [`backend/ai.py`](backend/ai.py) `banknotes` (Indian ₹10–₹500 notes) · [`public/js/payment-logic.js`](public/js/payment-logic.js) `breakdown`, `rupees` (change in notes and coins) | `POST /api/ai/banknote` | [`frontend.test.mjs`](tests/frontend.test.mjs) `breakdown`, `rupees` tests |
+| 🧭 **AI navigation** | [`backend/nav.py`](backend/nav.py) (Nominatim place search, where-am-I, OSRM walking routes turned into spoken steps) · [`public/js/navigation.js`](public/js/navigation.js) (map, turn-by-turn speech, re-routing, clock-face directions, indoor metro walk-through) | `GET /api/nav/search` · `/api/nav/reverse` · `/api/nav/route` | `test_instruction_wording` · `test_route_folds_short_unnamed_steps` · `test_navigation_*` |
+| 💬 **Talk AI** | [`backend/ai.py`](backend/ai.py) `ask` · [`public/js/talk.js`](public/js/talk.js) (voice or text, English / हिन्दी) | `POST /api/ai/ask` | `test_talk_ai_uses_demo_answer_without_a_key` |
+| 🎙️ **Voice commands** | [`public/js/commands.js`](public/js/commands.js) `parseCommand` · [`public/js/voice.js`](public/js/voice.js) | — (runs in the browser) | [`frontend.test.mjs`](tests/frontend.test.mjs) voice tests |
+
+**Prototype scope, stated plainly:**
+- **Stairs, kerbs and drop-offs:** the glasses detect these with the infrared depth sensor. The phone prototype has no depth sensor and YOLO's 80 everyday classes don't include stairs, so the dashboard plays these alerts as labelled **demo hazard scenes**.
+- **Indoor navigation:** shown as a step-by-step metro walk-through. Real indoor positioning needs the glasses' spatial beacons.
+- **Card terminals:** planned for the glasses. The prototype reads UPI QR codes and banknotes.
 
 <div align="center">
 <img src="https://capsule-render.vercel.app/api?type=rect&color=0:8B55F7,100:2E1065&height=4&width=1200" width="100%"/>
