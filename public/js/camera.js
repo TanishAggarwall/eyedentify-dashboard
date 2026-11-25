@@ -1,11 +1,14 @@
-// The phone's back camera stands in for the glasses' camera.
+// The phone's back camera stands in for the glasses' camera: either this device's own camera,
+// or a phone paired to this laptop (see remote.js), whose stream is plugged in with useStream().
 let stream = null;
-let info = { label: '', facing: '', width: 0, height: 0 };
+let info = { label: '', facing: '', width: 0, height: 0, remote: false, transport: '' };
+let onRemoteStop = null;
 const listeners = new Set();
 const attached = new Set();
 
 export const cameraSupported = Boolean(navigator.mediaDevices?.getUserMedia);
 export function isLive() { return Boolean(stream?.active); }
+export function isRemote() { return Boolean(stream && info.remote); }
 export function getInfo() { return { ...info }; }
 export function getStream() { return stream; }
 export function onCameraChange(fn) { listeners.add(fn); return () => listeners.delete(fn); }
@@ -42,15 +45,57 @@ export async function start() {
     facing: settings.facingMode || '',
     width: settings.width || 0,
     height: settings.height || 0,
+    remote: false,
+    transport: '',
   };
   track.addEventListener('ended', () => { stop(); });
   attached.forEach((v) => { v.srcObject = stream; v.play().catch(() => {}); });
   notify();
 }
 
+/**
+ * Use a stream that comes from elsewhere (a paired phone) as the camera.
+ * @param {MediaStream} remoteStream
+ * @param {{label?: string, transport?: string, width?: number, height?: number}} meta
+ * @param {() => void} [onStop] called once when the camera is stopped, to close the connection
+ */
+export function useStream(remoteStream, meta = {}, onStop = null) {
+  if (stream && stream !== remoteStream) {
+    // Same connection switching transport (direct → relay): keep it open. Anything else: close the old one.
+    const previousStop = onRemoteStop === onStop ? null : onRemoteStop;
+    onRemoteStop = null;
+    stream.getTracks().forEach((t) => t.stop());
+    previousStop?.();
+  }
+  stream = remoteStream;
+  onRemoteStop = onStop;
+  info = {
+    label: meta.label || 'Phone camera',
+    facing: 'environment',
+    width: meta.width || 0,
+    height: meta.height || 0,
+    remote: true,
+    transport: meta.transport || '',
+  };
+  remoteStream.getVideoTracks()[0]?.addEventListener('ended', () => { if (stream === remoteStream) stop(); });
+  attached.forEach((v) => { v.srcObject = stream; v.play().catch(() => {}); });
+  notify();
+}
+
+/** Update details (size, transport) of the current remote stream without restarting it. */
+export function updateRemoteInfo(meta) {
+  if (!info.remote) return;
+  info = { ...info, ...meta };
+  notify();
+}
+
 export function stop() {
+  const remoteStop = onRemoteStop;
+  onRemoteStop = null;
   stream?.getTracks().forEach((t) => t.stop());
   stream = null;
+  info = { label: '', facing: '', width: 0, height: 0, remote: false, transport: '' };
+  remoteStop?.();
   attached.forEach((v) => { v.srcObject = null; });
   notify();
 }

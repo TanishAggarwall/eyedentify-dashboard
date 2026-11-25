@@ -132,6 +132,7 @@ Every feature above is implemented in this repository. This table points to the 
 | 💵 **Currency: banknotes and change** | [`backend/ai.py`](backend/ai.py) `banknotes` (Indian ₹10–₹500 notes) · [`public/js/payment-logic.js`](public/js/payment-logic.js) `breakdown`, `rupees` (change in notes and coins) | `POST /api/ai/banknote` | [`frontend.test.mjs`](tests/frontend.test.mjs) `breakdown`, `rupees` tests |
 | 🧭 **AI navigation** | [`backend/nav.py`](backend/nav.py) (Nominatim place search, where-am-I, OSRM walking routes turned into spoken steps) · [`public/js/navigation.js`](public/js/navigation.js) (map, turn-by-turn speech, re-routing, clock-face directions, indoor metro walk-through) | `GET /api/nav/search` · `/api/nav/reverse` · `/api/nav/route` | `test_instruction_wording` · `test_route_folds_short_unnamed_steps` · `test_navigation_*` |
 | 💬 **Talk AI** | [`backend/ai.py`](backend/ai.py) `ask` · [`public/js/talk.js`](public/js/talk.js) (voice or text, English / हिन्दी) | `POST /api/ai/ask` | `test_talk_ai_uses_demo_answer_without_a_key` |
+| 📱 **Phone as the camera** | [`public/js/remote.js`](public/js/remote.js) (laptop: pairing QR, receive video) · [`public/phone.html`](public/phone.html) + [`public/js/phone.js`](public/js/phone.js) (phone: stream camera) · [`backend/remote.py`](backend/remote.py) (signalling + frame relay) | `/api/remote/*` · `GET /api/qr` | [`test_remote.py`](backend/tests/test_remote.py) |
 | 🎙️ **Voice commands** | [`public/js/commands.js`](public/js/commands.js) `parseCommand` · [`public/js/voice.js`](public/js/voice.js) | — (runs in the browser) | [`frontend.test.mjs`](tests/frontend.test.mjs) voice tests |
 
 **Prototype scope, stated plainly:**
@@ -215,6 +216,8 @@ This repository holds the **EYEDENTIFY companion dashboard and cloud backend**. 
 | GNSS + IMU | Phone GPS and compass; OpenStreetMap routes |
 | Temple tap | Mode button, `Space` key, or top-bar mic |
 
+**Run it on a laptop with your phone as the camera.** Open the dashboard on the laptop and pick **Phone** in the *Your camera* card. Scan the QR code with the phone and tap **Start streaming**. The phone's video goes straight to the laptop over WebRTC; if the network blocks that, frames are relayed through the server instead. If the phone disconnects, the dashboard **switches back to the laptop webcam automatically** (about 8–13 s), and the **Webcam / Phone** switch changes source at any time.
+
 <details>
 <summary><b>🔧 Run the dashboard locally</b></summary>
 
@@ -236,11 +239,12 @@ Put `GEMINI_API_KEY=...` in `backend/.env` (git-ignored) to turn on the AI featu
 <details>
 <summary><b>🧪 Tests</b></summary>
 
-81 automated tests run on every push to `main` through GitHub Actions ([`tests.yml`](.github/workflows/tests.yml)).
+101 automated tests run on every push to `main` through GitHub Actions ([`tests.yml`](.github/workflows/tests.yml)).
 
 | Suite | Tests | Covers |
 |---|:---:|---|
 | **Backend API** · [`backend/tests/test_api.py`](backend/tests/test_api.py) | 20 | YOLO detection returns valid normalised boxes, a generated UPI QR code is decoded, printed text is read by OCR, Talk AI and AI reading fall back safely without a Gemini key, bad / empty / oversized uploads are rejected, out-of-range coordinates and 25 km+ walks are refused |
+| **Phone-as-camera pairing** · [`backend/tests/test_remote.py`](backend/tests/test_remote.py) | 20 | Pairing codes, WebRTC offer/answer signalling, JPEG frame relay (newest frame only, size and type checks), session expiry, QR link |
 | **Backend units** · [`backend/tests/test_units.py`](backend/tests/test_units.py) | 30 | Spoken walking instructions, route step folding (OSRM mocked), distance maths, OCR text clean-up, non-max suppression, demo answers |
 | **Frontend** · [`tests/frontend.test.mjs`](tests/frontend.test.mjs) | 31 | UPI QR parsing (payee, app, amount, scam warnings), rupee formatting, change in notes and coins, voice command parsing |
 

@@ -14,6 +14,13 @@ Allow camera, microphone and location when asked. Turn the volume up, or use ear
 - [ ] **Temple tap** switches mode and says the mode name.
 - [ ] Tap the camera button: the back camera shows in "Your camera".
 
+## 1b. Phone as the laptop's camera
+- [ ] On the **laptop**, open the dashboard → *Your camera* card → **Phone**. A QR code and a 6-letter code appear.
+- [ ] Scan it with the **phone**, tap **Start streaming**. Phone shows "Live · direct" (or "Live · relay"); the laptop shows "Paired phone live" and the phone's picture.
+- [ ] Run **Real-time detection** on the laptop while pointing the phone at a person: alerts work as with the webcam.
+- [ ] Close the phone's tab: within ~15 s the laptop says "Phone camera lost. Switched to the webcam." and the webcam starts.
+- [ ] Switch back and forth with **Webcam / Phone**.
+
 ## 2. Real-time detection
 - [ ] **Start detecting**: model badge says "Cloud YOLO11N-320 ready".
 - [ ] Point at a person or chair: a box and distance appear; you hear "Person ahead, about 2 metres" and a beep on the correct side.

@@ -61,6 +61,8 @@
       <symbol id="i-flag" viewBox="0 0 24 24"><path d="M5 21V4"/><path d="M5 4h11l-2 4 2 4H5"/></symbol>
       <symbol id="i-repeat" viewBox="0 0 24 24"><path d="M4 12a8 8 0 0 1 14-5.3L20 9"/><path d="M20 4v5h-5"/><path d="M20 12a8 8 0 0 1-14 5.3L4 15"/><path d="M4 20v-5h5"/></symbol>
       <symbol id="i-thermo" viewBox="0 0 24 24"><path d="M14 14.8V5a2 2 0 0 0-4 0v9.8a4 4 0 1 0 4 0z"/></symbol>
+      <symbol id="i-phone" viewBox="0 0 24 24"><rect x="7" y="2.5" width="10" height="19" rx="2"/><path d="M11 18.5h2"/></symbol>
+      <symbol id="i-laptop" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="11" rx="1.5"/><path d="M2 19h20"/></symbol>
       <symbol id="i-sparkle" viewBox="0 0 24 24"><path d="M12 3l2 6 6 2-6 2-2 6-2-6-6-2 6-2z"/></symbol>
     </defs>
   </svg>
@@ -165,6 +167,10 @@
             <!-- Camera -->
             <article class="card camera-card">
               <div class="card-label"><svg class="icon"><use href="#i-camera"/></svg>YOUR CAMERA<i class="status-dot" id="cam-dot"></i></div>
+              <div class="source-switch" role="group" aria-label="Camera source">
+                <button type="button" class="source-btn" data-source="webcam" aria-pressed="true" title="This device's own camera"><svg class="icon"><use href="#i-laptop"/></svg>Webcam</button>
+                <button type="button" class="source-btn" data-source="phone" aria-pressed="false" title="Stream a phone's camera to this dashboard"><svg class="icon"><use href="#i-phone"/></svg>Phone</button>
+              </div>
               <div class="viewfinder" id="overview-viewfinder">
                 <video id="overview-video" playsinline muted aria-label="Live camera preview"></video>
                 <div class="viewfinder-empty" id="overview-empty">
@@ -637,6 +643,20 @@
       <div class="button-row end">
         <button class="button ghost" value="cancel">Cancel</button>
         <button class="button danger" value="ok">Clear history</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="phone-dialog" aria-labelledby="phone-title">
+    <form method="dialog" class="dialog-body phone-pair">
+      <h2 id="phone-title">Use your phone as the camera</h2>
+      <p>Scan this with the phone's camera, then tap <strong>Start streaming</strong> on the phone. If the phone drops, the dashboard switches back to the webcam.</p>
+      <div class="pair-qr"><img id="pair-qr" alt="QR code that opens the phone camera page" width="220" height="220"></div>
+      <p class="pair-code-label">Or open <a id="pair-link" target="_blank" rel="noopener">the phone page</a> and enter code</p>
+      <p class="pair-code" id="pair-code" aria-label="Pairing code">······</p>
+      <p class="pair-status" id="pair-status" role="status" aria-live="polite">Creating a pairing code…</p>
+      <div class="button-row end">
+        <button class="button ghost" value="cancel">Cancel</button>
       </div>
     </form>
   </dialog>

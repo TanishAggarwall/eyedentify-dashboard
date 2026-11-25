@@ -12,6 +12,10 @@ Serves the dashboard (public/) and the detection API from one HTTPS origin:
   GET  /api/nav/search?q=&lat=&lon=              -> nearby places (OpenStreetMap Nominatim)
   GET  /api/nav/reverse?lat=&lon=                -> "where am I", as a spoken sentence
   GET  /api/nav/route?flat=&flon=&tlat=&tlon=    -> walking route with spoken turn instructions
+  POST /api/remote/session                       -> pairing code so a phone can be the laptop's camera
+  POST/GET /api/remote/{code}/offer|answer       -> WebRTC signalling between phone and laptop
+  POST/GET /api/remote/{code}/frame              -> JPEG frame relay when WebRTC can't connect
+  GET  /api/qr?text=                             -> QR code PNG (for the pairing link)
 Images in JSON are base64-encoded JPEG without a data: prefix.
 
 Run locally:   cd backend && uvicorn app:app --port 8080
@@ -28,7 +32,7 @@ import binascii
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from PIL import Image, UnidentifiedImageError
 from pydantic import BaseModel, Field
@@ -51,8 +55,9 @@ _load_dotenv(HERE / ".env")
 
 import ai  # noqa: E402  (reads env vars, so it comes after the .env loader)
 import nav  # noqa: E402
+import remote  # noqa: E402
 from detector import YoloDetector  # noqa: E402
-from reader import read_text, scan_codes  # noqa: E402
+from reader import make_qr_png, read_text, scan_codes  # noqa: E402
 # 320-pixel input: ~4x less work than 640, fast enough on a small shared CPU.
 # Set MODEL_PATH=models/yolo11n.onnx for the 640 version on a bigger plan.
 MODEL_PATH = Path(os.getenv("MODEL_PATH", HERE / "models" / "yolo11n-320.onnx"))
@@ -230,6 +235,105 @@ async def nav_route(flat: float, flon: float, tlat: float, tlon: float):
     _coord(flat, flon)
     _coord(tlat, tlon)
     return await _nav(nav.route, flat, flon, tlat, tlon)
+
+
+# ---------------------------------------------------------------- Phone as camera (pairing)
+
+class Description(BaseModel):
+    type: str
+    sdp: str
+
+
+class Ping(BaseModel):
+    transport: str | None = None
+
+
+def _remote(fn, *args):
+    try:
+        return _no_store(fn(*args))
+    except remote.RemoteError as e:
+        raise HTTPException(e.status, str(e))
+
+
+@app.post("/api/remote/session")
+def remote_session():
+    s = remote.create()
+    return _no_store({"code": s.code, "expires_in": remote.IDLE_TTL})
+
+
+@app.get("/api/remote/{code}/status")
+def remote_status(code: str):
+    return _remote(lambda c: remote.get(c).status(), code)
+
+
+@app.post("/api/remote/{code}/ping")
+def remote_ping(code: str, body: Ping):
+    return _remote(remote.ping, code, body.transport)
+
+
+@app.post("/api/remote/{code}/offer")
+def remote_offer(code: str, body: Description):
+    return _remote(remote.set_offer, code, body.model_dump())
+
+
+@app.get("/api/remote/{code}/offer")
+def remote_get_offer(code: str):
+    try:
+        s = remote.get(code)
+    except remote.RemoteError as e:
+        raise HTTPException(e.status, str(e))
+    s.touch()
+    return _no_store(s.offer) if s.offer else Response(status_code=204)
+
+
+@app.post("/api/remote/{code}/answer")
+def remote_answer(code: str, body: Description):
+    return _remote(remote.set_answer, code, body.model_dump())
+
+
+@app.get("/api/remote/{code}/answer")
+def remote_get_answer(code: str):
+    try:
+        s = remote.get(code)
+    except remote.RemoteError as e:
+        raise HTTPException(e.status, str(e))
+    s.touch(phone=True)
+    return _no_store(s.answer) if s.answer else Response(status_code=204)
+
+
+@app.post("/api/remote/{code}/frame")
+async def remote_frame(code: str, request: Request):
+    body = await request.body()
+    try:
+        seq = remote.set_frame(code, body)
+    except remote.RemoteError as e:
+        raise HTTPException(e.status, str(e))
+    return _no_store({"seq": seq})
+
+
+@app.get("/api/remote/{code}/frame")
+async def remote_get_frame(code: str, after: int = 0):
+    try:
+        got = await remote.wait_frame(code, after)
+    except remote.RemoteError as e:
+        raise HTTPException(e.status, str(e))
+    if not got:
+        return Response(status_code=204, headers={"Cache-Control": "no-store"})
+    seq, jpeg = got
+    return Response(jpeg, media_type="image/jpeg", headers={"Cache-Control": "no-store", "X-Frame-Seq": str(seq)})
+
+
+@app.delete("/api/remote/{code}")
+def remote_end(code: str):
+    remote.end(code)
+    return Response(status_code=204)
+
+
+@app.get("/api/qr")
+def qr(text: str):
+    if not text or len(text) > 512:
+        raise HTTPException(400, "Text must be 1–512 characters.")
+    return Response(make_qr_png(text), media_type="image/png", headers={"Cache-Control": "public, max-age=3600"})
 
 
 # The dashboard itself, served last so /api routes take priority.

@@ -654,3 +654,20 @@ dialog::backdrop { background: #000b; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition: none !important; animation: none !important; }
 }
+
+/* ---------- Camera source switch & phone pairing ---------- */
+.source-switch { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; margin: 2px 0 12px; border-radius: 12px; background: var(--surface-2); border: 1px solid var(--line); }
+.source-btn { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 36px; border: 0; border-radius: 9px; background: none; color: var(--muted); font: inherit; font-size: .85rem; font-weight: 600; cursor: pointer; }
+.source-btn .icon { width: 16px; height: 16px; }
+.source-btn:hover { color: var(--text); }
+.source-btn[aria-pressed="true"] { background: var(--purple); color: #fff; }
+.source-btn:focus-visible { outline: 3px solid var(--purple-text); outline-offset: 2px; }
+.phone-pair { text-align: center; justify-items: center; }
+.pair-qr { width: 236px; height: 236px; padding: 8px; border-radius: 14px; background: #fff; display: grid; place-items: center; }
+.pair-qr img { width: 220px; height: 220px; image-rendering: pixelated; }
+.pair-code-label { font-size: .82rem; }
+.pair-code-label a { color: var(--purple-text); }
+.pair-code { font-family: var(--head); font-size: 1.9rem; font-weight: 800; letter-spacing: .28em; color: var(--text) !important; }
+.pair-status { min-height: 2.6em; color: var(--text) !important; }
+.phone-pair .button-row { justify-self: stretch; }
+@media (pointer: coarse) { .source-btn { min-height: 44px; } }

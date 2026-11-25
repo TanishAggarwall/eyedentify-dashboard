@@ -10,6 +10,7 @@ import { initTalk } from './talk.js';
 import { initNavigation } from './navigation.js';
 import { initVoice } from './voice.js';
 import { getHealth } from './api.js';
+import { startPairing } from './remote.js';
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -129,6 +130,26 @@ function renderUpcoming() {
 }
 
 /* ------------------------------------------------------------------ Camera */
+// Source is "webcam" (this device's camera) or "phone" (a paired phone streaming to this dashboard).
+// If a paired phone drops, the dashboard switches back to the webcam on its own.
+let source = 'webcam';
+let pairing = null;
+
+async function startWebcam() {
+  try {
+    await camera.start();
+    showNotice('');
+    const facing = camera.getInfo().facing;
+    logEvent({ kind: 'info', text: `Camera started${facing === 'environment' ? ' (back camera)' : ''}.` });
+    speak('Camera on.');
+    return true;
+  } catch (err) {
+    showNotice(`<strong>Camera unavailable.</strong> ${esc(err.message)}`);
+    speak('The camera could not start.');
+    return false;
+  }
+}
+
 async function toggleCamera() {
   if (camera.isLive()) {
     camera.stop();
@@ -136,17 +157,76 @@ async function toggleCamera() {
     speak('Camera off.');
     return;
   }
+  if (source === 'phone') usePhone();
+  else startWebcam();
+}
+
+function setSource(next) {
+  source = next;
+  document.querySelectorAll('.source-btn').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.source === source)));
+}
+
+async function useWebcam() {
+  setSource('webcam');
+  if (pairing) { pairing.cancel(); pairing = null; }
+  if (camera.isRemote()) camera.stop();
+  if (!camera.isLive()) await startWebcam();
+}
+
+async function usePhone() {
+  setSource('phone');
+  const dlg = $('#phone-dialog');
+  if (camera.isRemote()) { toast('The phone camera is already connected.'); return; }
+  dlg.returnValue = '';
+  if (!dlg.open) dlg.showModal();
+  if (pairing) return;
+  $('#pair-status').textContent = 'Creating a pairing code…';
+  $('#pair-code').textContent = '······';
+  $('#pair-qr').removeAttribute('src');
   try {
-    await camera.start();
-    showNotice('');
-    const facing = camera.getInfo().facing;
-    logEvent({ kind: 'info', text: `Camera started${facing === 'environment' ? ' (back camera)' : ''}.` });
-    speak('Camera on.');
+    pairing = await startPairing({
+      code(code, url, qrSrc) {
+        $('#pair-code').textContent = code;
+        $('#pair-qr').src = qrSrc;
+        $('#pair-link').href = url;
+      },
+      status(text) { $('#pair-status').textContent = text; },
+      error(text) { $('#pair-status').textContent = text; },
+      connected(transport) {
+        if (dlg.open) dlg.close('connected');
+        const how = transport === 'webrtc' ? 'direct video' : 'relayed through the server';
+        toast(`Phone camera connected (${how}).`);
+        speak('Phone camera connected.');
+        logEvent({ kind: 'info', text: `Phone camera connected (${how}).` });
+      },
+      lost(reason) {
+        pairing = null;
+        toast('Phone camera lost. Switched to the webcam.', { alert: true, ms: 5000 });
+        speak('Phone camera lost. Switching to the webcam.', { force: true });
+        logEvent({ kind: 'alert', text: `Phone camera lost (${reason}). Switched to the webcam.` });
+        camera.stop();
+        setSource('webcam');
+        startWebcam();
+      },
+      ended() {
+        pairing = null;
+        if (!camera.isLive() && source === 'phone' && !dlg.open) setSource('webcam');
+        renderCamera(camera.isLive());
+      },
+    });
   } catch (err) {
-    showNotice(`<strong>Camera unavailable.</strong> ${esc(err.message)}`);
-    speak('The camera could not start.');
+    $('#pair-status').textContent = err.message;
+    pairing = null;
   }
 }
+
+function closePairingDialog() {
+  // Closing the dialog before the phone connects cancels pairing and keeps the current camera.
+  if ($('#phone-dialog').returnValue === 'connected') return;
+  if (pairing && !camera.isRemote()) { pairing.cancel(); pairing = null; }
+  if (!camera.isRemote()) setSource('webcam');
+}
+
 function renderCamera(live) {
   const btn = $('#camera-btn');
   btn.setAttribute('aria-pressed', String(live));
@@ -157,12 +237,15 @@ function renderCamera(live) {
   $('#overview-cam-tag').hidden = !live;
   const pill = $('#glasses-pill');
   pill.classList.toggle('live', live);
-  pill.querySelector('span').textContent = live ? 'Phone camera live' : 'Glasses not connected';
+  pill.querySelector('span').textContent = live ? (camera.isRemote() ? 'Paired phone live' : 'Phone camera live') : 'Glasses not connected';
   const info = camera.getInfo();
-  $('#stat-camera').textContent = live ? 'Your camera is live.' : 'Waiting for your camera.';
+  $('#stat-camera').textContent = live ? (info.remote ? 'Your phone is the camera.' : 'Your camera is live.') : 'Waiting for your camera.';
   $('#stat-camera-caption').textContent = live
-    ? `${info.facing === 'environment' ? 'Back camera' : info.facing === 'user' ? 'Front camera' : 'Camera'}${info.width ? ` · ${info.width}×${info.height}` : ''} · standing in for the glasses`
-    : 'The phone\'s back camera is used when available.';
+    ? info.remote
+      ? `Paired phone · ${info.transport === 'relay' ? 'relayed through the server' : 'direct video'} · standing in for the glasses`
+      : `${info.facing === 'environment' ? 'Back camera' : info.facing === 'user' ? 'Front camera' : 'Camera'}${info.width ? ` · ${info.width}×${info.height}` : ''} · standing in for the glasses`
+    : source === 'phone' ? 'Waiting for the paired phone.' : 'The phone\'s back camera is used when available.';
+  if (live) setSource(info.remote ? 'phone' : 'webcam');
   $('#cam-dot').classList.toggle('on', live);
   $('#camera-card-btn').firstChild.textContent = live ? 'Stop camera ' : 'Start camera ';
   $('#art-cam-l').classList.toggle('on', live);
@@ -397,6 +480,8 @@ function init() {
   subscribe((what) => { if (what === 'events') { renderFeed(); renderHistory(); } });
 
   $('#camera-btn').addEventListener('click', toggleCamera);
+  document.querySelectorAll('.source-btn').forEach((b) => b.addEventListener('click', () => (b.dataset.source === 'phone' ? usePhone() : useWebcam())));
+  $('#phone-dialog').addEventListener('close', closePairingDialog);
   document.addEventListener('click', (e) => {
     if (e.target.closest('[data-action="camera-start"]')) toggleCamera();
     const f = e.target.closest('[data-filter]');
@@ -412,7 +497,7 @@ function init() {
   window.addEventListener('hashchange', route);
   document.addEventListener('visibilitychange', () => {
     // Free the camera when the phone screen locks or the tab is hidden.
-    if (document.hidden && camera.isLive()) camera.stop();
+    if (document.hidden && camera.isLive() && !camera.isRemote()) camera.stop();
   });
   route();
 }

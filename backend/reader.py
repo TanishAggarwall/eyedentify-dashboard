@@ -96,3 +96,19 @@ def scan_codes(img: Image.Image) -> dict:
                     round((max(xs) - min(xs)) / w, 4), round((max(ys) - min(ys)) / h, 4)],
         })
     return {"codes": codes, "width": w, "height": h, "ms": round((time.perf_counter() - t0) * 1000, 1)}
+
+
+def make_qr_png(text: str, scale: int = 8) -> bytes:
+    """Render text as a QR code PNG with a quiet zone, for the phone pairing link."""
+    import io
+
+    import zxingcpp
+
+    code = zxingcpp.create_barcode(text, zxingcpp.BarcodeFormat.QRCode)
+    qr = Image.fromarray(np.asarray(zxingcpp.write_barcode_to_image(code, scale=scale))).convert("L")
+    pad = 4 * scale
+    canvas = Image.new("L", (qr.width + 2 * pad, qr.height + 2 * pad), 255)
+    canvas.paste(qr, (pad, pad))
+    buf = io.BytesIO()
+    canvas.save(buf, "PNG", optimize=True)
+    return buf.getvalue()
