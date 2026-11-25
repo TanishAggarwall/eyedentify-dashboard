@@ -6,6 +6,8 @@
 
 <br>
 
+[![Tests](https://github.com/TanishAggarwall/eyedentify-dashboard/actions/workflows/tests.yml/badge.svg)](https://github.com/TanishAggarwall/eyedentify-dashboard/actions/workflows/tests.yml)
+
 ![Product](https://img.shields.io/badge/PRODUCT-WEARABLE%20SMART%20GLASSES-8B55F7?style=for-the-badge&labelColor=000000)
 ![Users](https://img.shields.io/badge/FOR-BLIND%20%26%20LOW--VISION-8B55F7?style=for-the-badge&labelColor=000000)
 ![Hackathon](https://img.shields.io/badge/NEXHACK-2.0-8B55F7?style=for-the-badge&labelColor=000000)
@@ -210,6 +212,27 @@ Put `GEMINI_API_KEY=...` in `backend/.env` (git-ignored) to turn on the AI featu
 </details>
 
 <details>
+<summary><b>🧪 Tests</b></summary>
+
+81 automated tests run on every push to `main` through GitHub Actions ([`tests.yml`](.github/workflows/tests.yml)).
+
+| Suite | Tests | Covers |
+|---|:---:|---|
+| **Backend API** · [`backend/tests/test_api.py`](backend/tests/test_api.py) | 20 | YOLO detection returns valid normalised boxes, a generated UPI QR code is decoded, printed text is read by OCR, Talk AI and AI reading fall back safely without a Gemini key, bad / empty / oversized uploads are rejected, out-of-range coordinates and 25 km+ walks are refused |
+| **Backend units** · [`backend/tests/test_units.py`](backend/tests/test_units.py) | 30 | Spoken walking instructions, route step folding (OSRM mocked), distance maths, OCR text clean-up, non-max suppression, demo answers |
+| **Frontend** · [`tests/frontend.test.mjs`](tests/frontend.test.mjs) | 31 | UPI QR parsing (payee, app, amount, scam warnings), rupee formatting, change in notes and coins, voice command parsing |
+
+Tests never call Gemini or any paid API.
+
+```bash
+.venv\Scripts\pip install -r backend/requirements-dev.txt
+cd backend && ..\.venv\Scripts\python -m pytest      # backend
+node --test tests/*.test.mjs                           # frontend (Node 22+)
+```
+
+</details>
+
+<details>
 <summary><b>🔌 Backend API</b></summary>
 
 | Endpoint | Input | Output |
@@ -235,6 +258,10 @@ backend/
   reader.py       RapidOCR text reading, zxing-cpp QR / barcodes
   models/         yolo11n-320.onnx (default), yolo11n.onnx (640 px)
 public/           Dashboard: Overview, five modes, Device & settings, History
+  js/payment-logic.js, js/commands.js   browser-free logic (unit-tested)
+backend/tests/    pytest suite
+tests/            frontend unit tests (node --test)
+.github/workflows CI: runs all tests on every push
 docs/             Product images
 Dockerfile        Northflank container
 vercel.json       Vercel static hosting + /api proxy
